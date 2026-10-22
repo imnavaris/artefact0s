@@ -1,0 +1,17 @@
+{
+  "schema": "artefactos/texts@1",
+  "notice": "Citas breves de poesía y literatura del período, con procedencia verificable. status=placeholder NO es material real: la obra no se entrega así. Cada cita necesita autor, obra, año y edición o URL consultada.",
+  "texts": [
+    {
+      "id": "placeholder-libro",
+      "status": "placeholder",
+      "piece": "book",
+      "title": "El libro quemado",
+      "author": "—",
+      "work": "—",
+      "year": null,
+      "excerpt": "Texto provisorio. Este fragmento se esculpe sobre la silueta del libro y se lee en la columna. Se reemplaza por una cita verificada de poesía o literatura del período, con autor, obra, año y edición.",
+      "source": null
+    }
+  ]
+}

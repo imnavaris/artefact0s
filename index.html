@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b0c10">
+  <title>Artefactos de memoria</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage" class="stage" aria-hidden="true"></div>
+
+  <main class="column">
+    <section class="piece" aria-labelledby="t-book">
+      <h1 id="t-book" class="piece-title">El libro quemado</h1>
+      <blockquote class="citation">
+        <p id="quote"></p>
+        <footer id="attribution"></footer>
+      </blockquote>
+      <p class="notice">Fragmentos citados con fines de estudio. Procedencia completa en Créditos.</p>
+    </section>
+  </main>
+
+  <script type="importmap">{"imports":{"three":"./vendor/three.js","motion":"./vendor/motion.js","glyphcss":"./vendor/glyphcss.js"}}</script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

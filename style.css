@@ -1,0 +1,68 @@
+@font-face{font-family:'Sligoil Micro';src:url('assets/fonts/Sligoil-Micro.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Newsreader';src:url('assets/fonts/Newsreader.woff2') format('woff2');font-weight:200 800;font-display:swap}
+
+:root{
+  --bg:#0b0c10;
+  --ink:#f1f5f9;
+  --ink-2:#94a3b8;
+  --paper:#cfc7b8;
+  --ash:#6b655c;
+  --accent:#d99b26;
+  --hairline:#2e3342;
+  --glow:1;
+  --cell-w:6px;
+  --cell-h:10px;
+  --ease:cubic-bezier(0.23,1,0.32,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
+body{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:20px;line-height:32px;font-weight:400}
+
+/* Escenario ASCII: fijo, a la izquierda. */
+.stage{
+  position:fixed;inset:0 45% 0 0;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;touch-action:pan-y;cursor:grab;
+}
+.stage:active{cursor:grabbing}
+.stage::before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(1100px 760px at 46% 44%,rgba(217,155,38,.045),rgba(11,12,16,0) 68%);
+}
+.glyph-scene{position:relative}
+.glyph-scene .glyph-output{
+  margin:0;
+  font-family:'Sligoil Micro',ui-monospace,'Cascadia Mono',Consolas,monospace;
+  font-size:var(--cell-h);line-height:var(--cell-h);
+  color:var(--paper);
+  white-space:pre;
+  font-kerning:none;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0;
+  text-shadow:
+    0 0 1px rgba(207,199,184,.45),
+    0 0 7px rgba(217,155,38,calc(.16 * var(--glow))),
+    0 0 16px rgba(217,155,38,calc(.07 * var(--glow)));
+}
+
+/* Columna de lectura. */
+.column{position:relative;margin-left:55%;width:45%;padding:0 48px}
+.piece{max-width:560px;margin:0 auto;padding:48px 0}
+.piece-title{font-size:36px;line-height:44px;font-weight:400;letter-spacing:-.01em;margin:0 0 24px}
+.citation{margin:0}
+.citation p{margin:0 0 24px;max-width:62ch}
+.citation footer{color:var(--ink-2);font-size:16px;line-height:24px}
+.citation footer::before{content:"";display:inline-block;width:24px;height:1px;background:var(--accent);vertical-align:middle;margin-right:8px}
+.notice{color:var(--ink-2);font-size:16px;line-height:24px;margin:24px 0 0}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+@media (max-width:1100px){
+  .stage{inset:0 0 auto 0;height:46vh;align-items:flex-start;padding-top:24px}
+  .column{margin-left:0;width:100%;padding:0 32px}
+  .piece{padding:32px 0}
+}
+@media (max-width:720px){
+  .stage{height:42vh}
+  .column{padding:0 24px}
+  .piece-title{font-size:28px;line-height:36px}
+  .citation p{font-size:18px;line-height:28px;max-width:none}
+}

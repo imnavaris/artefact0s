@@ -1,0 +1,118 @@
+import { createGlyphScene, createGlyphOrthographicCamera } from 'glyphcss';
+
+const CELL_W = 6;   // px de avance de la celda (se recalibra con la fuente real)
+const CELL_H = 10;  // px de alto de línea
+
+// Escenario ASCII: una escena de glyphcss que escribe en un unico <pre>.
+export class GlyphStage {
+  constructor(host, opts = {}) {
+    this.host = host;
+    this.text = '';
+    this.extent = null;
+    this.cellW = CELL_W;
+    this.cellH = CELL_H;
+    this.cols = 80;
+    this.rows = 24;
+    this.cellAspect = CELL_H / CELL_W;
+    this.camera = createGlyphOrthographicCamera({ rotX: 62, rotY: -20, zoom: 120 });
+    this.handle = createGlyphScene(host, {
+      camera: this.camera,
+      cols: this.cols,
+      rows: this.rows,
+      cellAspect: this.cellAspect,
+      mode: 'solid',
+      glyphPalette: 'default',
+      useColors: true,
+      colorTolerance: 24,
+      retainShade: true,
+      depthEpsilon: 0.02,
+      supersample: 2,
+      smoothShading: true,
+      doubleSided: opts.doubleSided !== false,
+      directionalLight: { direction: [0.4, 0.6, 0.7], intensity: 0.85 },
+      ambientLight: { intensity: 0.45 },
+      transformCells: (grid) => this.sculpt(grid),
+    });
+  }
+
+  get output() { return this.handle.output; }
+
+  setText(text) {
+    this.chars = [...String(text || '')].filter((c) => c.trim().length > 0);
+    this.text = text;
+  }
+
+  // Pintar el texto sobre la silueta: cada celda ocupada recibe un caracter.
+  sculpt(grid) {
+    let minC = Infinity, maxC = -1, minR = Infinity, maxR = -1;
+    for (let r = 0; r < grid.rows; r++) {
+      for (let c = 0; c < grid.cols; c++) {
+        const i = r * grid.cols + c;
+        if (grid.char[i] === ' ' || grid.depth[i] === -Infinity) continue;
+        if (c < minC) minC = c;
+        if (c > maxC) maxC = c;
+        if (r < minR) minR = r;
+        if (r > maxR) maxR = r;
+      }
+    }
+    this.extent = maxC < 0 ? null : { minC, maxC, minR, maxR };
+    const chars = this.chars;
+    if (!chars || !chars.length) return;
+    if (this.noSculpt) return;
+    let k = 0;
+    for (let i = 0; i < grid.char.length; i++) {
+      if (grid.char[i] === ' ' || grid.depth[i] === -Infinity) continue;
+      grid.char[i] = chars[k++ % chars.length];
+    }
+  }
+
+  setPolygons(polygons) {
+    if (this.mesh) this.mesh.dispose();
+    this.mesh = this.handle.add(polygons);
+    this.handle.rerender();
+  }
+
+  // Ajusta el zoom para que el objeto entre en la grilla en los dos ejes.
+  fit(targetW = 0.72, targetH = 0.82) {
+    const base = this.handle.getBaseResolution();
+    for (let i = 0; i < 5; i++) {
+      this.handle.rerender();
+      const e = this.extent;
+      if (!e) break;
+      const w = e.maxC - e.minC + 1;
+      const h = e.maxR - e.minR + 1;
+      if (!w || !h) break;
+      const ratio = Math.min((targetW * base.cols) / w, (targetH * base.rows) / h);
+      if (Math.abs(ratio - 1) < 0.03) break;
+      this.camera.zoom *= ratio;
+    }
+    this.handle.rerender();
+  }
+
+  resize(width, height) {
+    this.cols = Math.max(20, Math.floor(width / this.cellW));
+    this.rows = Math.max(10, Math.floor(height / this.cellH));
+    this.handle.setOptions({ cols: this.cols, rows: this.rows, cellAspect: this.cellAspect });
+    // La escena puede ajustar la grilla: el <pre> tiene que medir exactamente
+    // lo que la escena resolvio, o la ultima celda envuelve a la fila siguiente.
+    const base = this.handle.getBaseResolution();
+    const pre = this.output;
+    if (pre) {
+      pre.style.width = base.cols * this.cellW + 'px';
+      pre.style.height = base.rows * this.cellH + 'px';
+    }
+  }
+
+  // La tipografia falla en silencio: se mide el avance real antes de pintar.
+  setCellMetrics(cellW, cellH) {
+    this.cellW = cellW;
+    this.cellH = cellH;
+    this.cellAspect = cellH / cellW;
+  }
+
+  rotate(yaw, pitch) {
+    this.camera.rotY = yaw;
+    this.camera.rotX = pitch;
+    this.handle.rerender();
+  }
+}
