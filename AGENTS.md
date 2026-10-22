@@ -57,7 +57,7 @@ docs/                 plan técnico, fuentes, validación
 3. **El texto manda.** El bloque legible en el DOM es el contenido. La capa ASCII es la inscripción, no el mensaje.
 4. **El estado es función del progreso.** `state = f(p)`, sin memoria ni acumuladores: subir deshace lo que bajar hizo.
 5. **Cero extrapolación en el corpus.** Cada cita con autor, obra, año y edición/URL. Si no está verificado, `status: "placeholder"`.
-6. **Cero颜色 inventados**: la paleta y la tipografía están fijadas en `DESIGN.md` y en los tokens de `style.css`.
+6. **Cero colores inventados**: la paleta y la tipografía están fijadas en `DESIGN.md` y en los tokens de `style.css`.
 
 ## Decisiones técnicas que ya costaron sangre
 
