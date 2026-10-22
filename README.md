@@ -30,8 +30,9 @@ Abrir http://localhost:8000 . No requiere npm para visualizar la obra: los bundl
 - `vendor/`: Three.js, Motion y glyphcss empaquetados (ESM, minificados).
 - `tools/`: herramientas de encuadre y verificación — volcar siluetas a texto, barrer poses, capturar la obra en imagen, medir el costo por cuadro.
 - `docs/VALIDACION.md`: los criterios de cierre de la obra y la forma de medirlos.
+- `LICENSE.md`: licencias de código, tipografía y textos de la obra.
 
-Las fuentes están dentro de la obra: la sección final **Créditos y fuentes** lleva, por cita, autor, obra, año, edición o URL y estado de permiso; después, licencias de código y tipografía, el contexto histórico consultado y la aclaración de que los modelos son representaciones y no levantamientos técnicos.
+Las fuentes están dentro de la obra: la sección final **Créditos y fuentes** lleva, por cita, autor, obra, año, edición o URL y estado de permiso, más la aclaración de que los modelos son representaciones y no levantamientos técnicos. Las licencias de código y tipografía están en `LICENSE.md`, no en el colofón.
 
 ## Reconstruir los bundles
 
@@ -44,4 +45,4 @@ npm run build
 
 ## Estado
 
-Etapa 3 del plan, cerrada: las seis piezas se leen como lo que son, el scroll recorre la obra y el estado de cada pieza lo sigue, el corpus tiene citas reales con procedencia, y el cierre lleva créditos, licencias y contexto histórico. `PLAN.md` tiene el estado real y `docs/VALIDACION.md` los criterios con su evidencia.
+Etapa 4 del plan, cerrada. La inscripción se lee como poema (palabras separadas por `·`, un verso por fila) y la trama mide 14 px de celda; el libro se quema con fuego de glifos, la silueta se borra de a poco y el pañuelo lleva «NUNCA MÁS» sobre el triángulo. El scroll no se traba: las medidas están cacheadas y no hay lecturas de layout por cuadro. `PLAN.md` tiene el estado real y `docs/VALIDACION.md` los criterios con su evidencia.

@@ -16,7 +16,7 @@ Consecuencias operativas:
 - El arrastre gira. Nada más.
 - No hay clic izquierdo. Ningún `click` sobre el escenario, ningún toggle, ningún borrado por arrastre.
 - La rueda hace scroll. El zoom se elimina.
-- No hay partículas, ni fuegos artificiales de píxeles, ni sonidos de confirmación.
+- No hay partículas, ni fuegos artificiales de píxeles, ni sonidos de confirmación. El fuego del libro quemado es de glifos: el frente de llama son caracteres (`^/\|*~"`) y la ceniza son otros (`.,`); no hay chispas ni humo.
 
 ### Lo que la obra no hace
 
@@ -68,17 +68,17 @@ Suavizado: `state += (target - state) * (1 - Math.exp(-dt * 5))`, con `dt` clamp
 ### Rotación por arrastre
 
 - `pointerdown` sobre el escenario, `setPointerCapture`, y recién a los 4 px de movimiento se considera arrastre. Un clic sin desplazamiento no hace absolutamente nada.
-- Horizontal: yaw, ±35°. Vertical: pitch, ±12°. Fuera de rango hay tope elástico, sin rebote.
+- Horizontal: yaw sin tope — la pieza da vueltas completas. Vertical: pitch, ±90°. Sin rebote: la rotación se queda donde quedó. Decisión del autor (22/10/2026): los topes impedían mirar la pieza por todos sus ángulos.
 - Al soltar, la rotación se queda donde quedó. No vuelve sola a la pose inicial: el rebote automático es gesto de juguete.
 - `touch-action: pan-y` en el escenario. En táctil, el dedo vertical scrollea y el horizontal gira. Sin esto, el arrastre se come el scroll y la obra se vuelve inusable en teléfono.
 - Cursor `grab` / `grabbing`. Se elimina el `crosshair` actual.
 
 ### Dos textos, una fuente
 
-El bloque legible y la inscripción sobre el objeto salen del mismo string del corpus. Una sola fuente de verdad por pieza: `cita_id`.
+El bloque legible y la inscripción sobre el objeto salen del mismo string del corpus. Una sola fuente de verdad por pieza: `cita_id`. La excepción es el pañuelo, cuya inscripción es «NUNCA MÁS» y tiene su entrada propia en el corpus.
 
 - Bloque legible: texto real en el DOM, `blockquote` con `cite`. Es el que se lee y el que encuentra el buscador del navegador.
-- Texto esculpido: los mismos caracteres, en el mismo orden, mapeados sobre la superficie del objeto por layout de glifo, no por brillo medio. Se reconoce de refilón al girar. No se lee de corrido y no hace falta que se lea: la lectura completa está en el bloque.
+- Texto esculpido: los mismos caracteres, en el mismo orden, mapeados sobre la superficie del objeto por layout de glifo, no por brillo medio. Las palabras se separan con `·` y cada verso arranca en una fila: la superficie tiene que leerse como poema, no como ruido. Decisión del autor (22/10/2026).
 - La capa esculpida es imagen, no contenido: `aria-hidden="true"` y opacidad 0.68 (≈5.7:1 sobre el fondo). Nunca baja de 0.55 (4.15:1) mientras sea visible. Cuando el estado la destruye, se van los glifos, no la opacidad: un texto que se atenúa se lee como un slider de brillo.
 
 ---
@@ -134,7 +134,7 @@ El libro quemado
 - Máximo 4 versos o 40 palabras por pieza, lo que sea menor. Sin poemas completos.
 - Obra y año en bastardilla; autor en redonda; `cite` con la URL o la edición en el HTML, invisible en pantalla.
 - El aviso de copyright no va pegado a cada cita: va una vez, al pie del bloque, en 16/24 y `#94a3b8`: «Fragmentos citados con fines de estudio. Procedencia completa en Créditos.»
-- La inscripción del pañuelo usa un fragmento del corpus, no «NUNCA MÁS».
+- La inscripción del pañuelo dice «NUNCA MÁS»: es la consigna de las Madres de Plaza de Mayo y es lo que tiene que leerse. El fragmento verificado de Gelman sigue en la columna de lectura. Decisión del autor (22/10/2026), que reemplaza la anterior.
 
 No hay convención de aviso de copyright en el Atlas. Lo anterior es decisión editorial, apoyada en la familia Editorial (colofón y créditos de revista monográfica).
 

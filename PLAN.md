@@ -2,7 +2,7 @@
 
 Plan de ejecución para llevar el proyecto a su estado final. Por etapas, con verificación entre etapas: **ninguna etapa se da por cerrada sin evidencia ejecutada**.
 
-Estado: Etapas 0, 1, 2 y 3 cerradas. La obra se entrega con sus créditos, sus criterios de validación y su registro en el vault.
+Estado: Etapas 0, 1, 2, 3 y 4 cerradas. La obra se entrega con sus créditos, sus criterios de validación y su registro en el vault.
 
 El diseño y la interacción ya están decididos y documentados en `DESIGN.md`; este documento no los re-discute, los ejecuta. Las reglas del repo están en `AGENTS.md`.
 
@@ -74,7 +74,7 @@ Tres consecuencias que gobiernan todo lo demás:
 
 ---
 
-## Etapa 2 — Legibilidad y las seis piezas · ABIERTA
+## Etapa 2 — Legibilidad y las seis piezas · CERRADA
 
 **Objetivo:** que las seis piezas se lean como lo que son, con su estado propio, y que el scroll recorra la obra.
 
@@ -145,7 +145,7 @@ Los seis modelos son ahora funciones puras del progreso: `update(p)` con un úni
 
 ### 2.4 Rotación · CERRADA
 
-- [x] Arrastre sobre el escenario: yaw ±35°, pitch ±12°, con tope elástico sin rebote.
+- [x] Arrastre sobre el escenario: rotación libre (yaw sin tope, pitch ±90°), sin rebote. La Etapa 4 sacó los topes.
 - [x] La rotación se queda donde quedó.
 - [x] `touch-action: pan-y` en el escenario.
 - [x] `cursor: grab` / `grabbing`.
@@ -205,6 +205,37 @@ Evidencia y límites en `docs/VALIDACION.md`. Lo que no se verificó: la obra en
 - [x] Por encima de ~25.000 glifos, celda de 8 × 12 px en vez de 6 × 10. No aplica con la grilla actual: 2.957 glifos (133 × 74). Queda como regla si la obra crece.
 
 ---
+
+## Etapa 4 — Lectura, fuego y fluidez · CERRADA
+
+Cambio pedido por el autor el 22/10/2026, después de ver la obra: el scroll se felt trabado, los modelos no se quemaban ni se borraban, el pañuelo no se leía como pañuelo, la inscripción era ruido y el texto de la trama chico.
+
+| # | Cambio | Archivo | Hecho |
+|---|---|---|---|
+| 4.1 | Inscripción con palabras separadas por `·` y un verso por fila | `src/glyph-stage.js` | ✔ |
+| 4.2 | Trama de celda de 14 px (grilla resuelta 95 × 53) | `style.css`, `src/main.js` | ✔ |
+| 4.3 | Fuego de glifos: frente de llama y ceniza, sin partículas | `src/glyph-stage.js`, `src/models/book.js` | ✔ |
+| 4.4 | El libro se quema de verdad: intacto → frente de fuego → carbonizado, hoja por hoja | `src/models/book.js` | ✔ |
+| 4.5 | La silueta se borra de a poco, en el sitio: ya no sale del encuadre | `src/models/silhouette.js` | ✔ |
+| 4.6 | El pañuelo se lee: capucha sobre la cabeza, nudo, dos puntas; y se despliega en el triángulo | `src/models/scarf.js` | ✔ |
+| 4.7 | La inscripción del pañuelo es «NUNCA MÁS», con su procedencia en el corpus | `assets/texts/texts.json` | ✔ |
+| 4.8 | Rotación libre: yaw sin tope, pitch ±90° | `src/main.js` | ✔ |
+| 4.9 | Scroll: medidas cacheadas, sin lecturas de layout por cuadro, umbral de reconstrucción 0,018, malla del libro de 18 × 14 | `src/main.js`, `src/models/book.js` | ✔ |
+| 4.10 | Colofón limpio: sin licencias ni contexto histórico. Las licencias quedan en `LICENSE.md` | `index.html`, `LICENSE.md` | ✔ |
+
+**Verificación:** conversión del libro 15,9 → 8,3 ms; raster 8,8 → 5,7 ms; 59 fps en scroll continuo; grilla 95 × 53. La silueta a p=1 ocupa 3 × 1 celdas (antes era una figura entera). El pañuelo a p=1 se lee como triángulo con el vértice arriba.
+
+**Bugs de fondo que aparecieron en el camino (no volver a tropezar):**
+
+| Síntoma | Causa | Resolución |
+|---|---|---|
+| La obra se veía sin citas cuando la URL traía `?piece=…` | `server.py` comparaba el path completo, con query included | `urlparse(self.path).path` antes de decidir |
+| Al recargar, la pieza no correspondía al scroll | Las secciones se medían con `getBoundingClientRect` + `scrollY`, y el navegador restaura el scroll | Medir con `offsetTop` |
+| La verificación medía un camino que nadie ve | El headless reporta `prefers-reduced-motion: reduce` | `Emulation.setEmulatedMedia` con `no-preference` |
+| Las capturas salían con el texto viejo | Perfil de Chromium persistente con caché | Caché desactivada por CDP y perfil nuevo por corrida |
+
+---
+
 
 ## Riesgos
 

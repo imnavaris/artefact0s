@@ -47,6 +47,7 @@ assets/fonts/         Sligoil Micro (trama ASCII), Newsreader (lectura)
 vendor/               bundles commiteados: three, motion, glyphcss
 tools/                encuadre y verificación: siluetas, poses, capturas, costo
 docs/VALIDACION.md    criterios de cierre de la obra y cómo se miden
+LICENSE.md            licencias de código, tipografía y textos de la obra
 ```
 
 ## Reglas duras
@@ -72,7 +73,12 @@ No romperlas. Cada una tiene una razón y una trampa:
 - **El sombreado suave no vale lo que cuesta**: `smoothShading: true` multiplica por siete el costo del raster (52,8 ms contra 9,5) y solo cambia el 0,07 % de los píxeles. Va en `false`.
 - **Sin JavaScript el texto tiene que estar en el DOM**: por eso `server.py` inyecta el corpus en `index.html`. El JS solo completa lo que falta.
 - **`rAF` no corre en headless con `--dump-dom`**: para verificar de verdad, usar el CDP de `tools/cdp.mjs`, que sí ejecuta la página con cuadros reales.
-- **El perfil de Chromium es persistente**: `tools/cdp.mjs` deja la caché activada, y el navegador puede servir un módulo viejo del disco. La herramienta desactiva la caché por CDP; si se agrega otra, hacer lo mismo.
+- **La query string rompe la inyección del corpus**: `server.py` tiene que sacar el query con `urlparse` antes de decidir si sirve el documento. Con `?piece=book` el `index.html` llegaba sin las citas y la obra se veía vacía: todas las herramientas de calibración vinieron midiendo una página sin texto.
+- **El headless reporta movimiento reducido**: el estado se cuantiza en cuatro escalones y la verificación mide un camino que la gente no ve. Hay que forzar `no-preference` con `Emulation.setEmulatedMedia`.
+- **El navegador restaura el scroll al recargar**: las posiciones de las secciones se leen con `offsetTop`, no con `getBoundingClientRect` + `scrollY`, que con el scroll restaurado mide cualquier cosa.
+- **El perfil de Chromium es persistente**: la caché sirve módulos viejos y el navegador restaura el scroll de la sesión anterior. `tools/cdp.mjs` desactiva la caché por CDP, pone `scrollRestoration` en manual y usa un perfil nuevo por corrida en las herramientas de captura.
+- **La trama mide 14 px de celda**: a 10 px el poema no se leía de lejos. La grilla resuelta bajó a 95 × 53; ése es el precio de la legibilidad.
+- **La inscripción se arma en el motor**: las palabras se separan con `·` y cada verso arranca en una fila. El frente de fuego son glifos (`^/\|*~"` y `.,`), no partículas: el modelo declara el avance con `burn(p)` y el motor lo pinta.
 - **La pieza activa es la última que pasó por el centro**: el cierre (que no es una pieza) no puede dejar al escenario en la primera pieza. Con la regla de "la sección que contiene el centro", el colofón se leía sobre el libro.
 - **Las fuentes viven en la obra**: la sección de créditos del documento es el único lugar donde están las referencias. `docs/FUENTES.md` se absorbió ahí y se borró; no volver a duplicarlas en un documento aparte.
 
@@ -114,6 +120,7 @@ las que hablan con la página.
 | `tools/silhouette-bbox.mjs <salida.html>` | Caja envolvente de la silueta y grilla resuelta |
 | `tools/cdp.mjs scroll all` | Recorre la obra con scroll real y reporta estado, glow y consola |
 | `tools/cdp.mjs eval "<expr>"` | Evalúa una expresión en la página viva |
+| `tools/cdp.mjs shot <salida.png> [pieza] [p] [rx] [ry]` | Captura la pieza rasterizada, con la pose y el estado que se pidan |
 | `tools/verify-nojs.mjs` | Verifica la obra con la ejecución de scripts deshabilitada |
 | `tools/perf.mjs` | Mide conversión, render, fps y peor cuadro |
 | `tools/compare-raster.mjs` / `compare-shade.mjs` | Compara opciones del raster en imagen y en costo |
