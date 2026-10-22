@@ -89,6 +89,30 @@ python server.py               # sirve en :8000
 - La trama se ve en el escenario, con la tipografía de lectura en la columna.
 - `python .agents/scripts/slop_lint.py` no aplica (no es un documento del vault), pero `PLAN.md`, `DESIGN.md` y `AGENTS.md` no llevan prosa de IA.
 - Todo texto nuevo del corpus tiene procedencia verificada.
+- La obra se recorre entera: `node tools/cdp.mjs scroll all` (las seis piezas, cada una de 0 a 1, consola limpia).
+- Sin JavaScript: `node tools/verify-nojs.mjs` (seis piezas apiladas, texto completo en el DOM).
+- El costo por cuadro: `node tools/perf.mjs` (fps en scroll continuo y peor cuadro).
+
+## Herramientas
+
+Todas usan el Chromium que ya trae Playwright en la máquina
+(`C:\Users\Usuario\AppData\Local\ms-playwright\chromium-1248`); no piden npm
+ni instalación. El servidor tiene que estar corriendo en el puerto 8011 para
+las que hablan con la página.
+
+| Herramienta | Para qué |
+|---|---|
+| `tools/dump-pose.mjs <pieza> [rx] [ry] [p]` | Volca la silueta en texto plano, para leerla como imagen |
+| `tools/dump-sweep.mjs <pieza> "<rx,ry> ..." [p]` | Barre poses y mide la silueta de cada una |
+| `tools/find-pose.mjs <pieza> [p]` | Ordena la grilla de poses por partedura: una pieza partida en dos lóbulos es la que se lee |
+| `tools/shot.mjs <pieza> <salida.png> [rx] [ry] [p]` | Captura la pieza en imagen |
+| `tools/shot-at.mjs <salida.png> <scrollY>` | Captura la obra en una posición del recorrido |
+| `tools/silhouette-bbox.mjs <salida.html>` | Caja envolvente de la silueta y grilla resuelta |
+| `tools/cdp.mjs scroll all` | Recorre la obra con scroll real y reporta estado, glow y consola |
+| `tools/cdp.mjs eval "<expr>"` | Evalúa una expresión en la página viva |
+| `tools/verify-nojs.mjs` | Verifica la obra con la ejecución de scripts deshabilitada |
+| `tools/perf.mjs` | Mide conversión, render, fps y peor cuadro |
+| `tools/compare-raster.mjs` / `compare-shade.mjs` | Compara opciones del raster en imagen y en costo |
 
 ## Vocabulario
 
