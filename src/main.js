@@ -309,14 +309,16 @@ window.addEventListener('resize', fit);
 requestAnimationFrame(frame);
 
 // Columna de lectura: el texto completo vive en el DOM desde el primer render.
+// El servidor ya lo inyecta desde el corpus; esto solo completa lo que falte
+// (por ejemplo, si el documento se abre sin pasar por server.py).
 function updateReadingColumn(id) {
   const quote = quoteFor(id);
   const block = document.querySelector(`[data-piece="${id}"]`);
   if (!block || !quote) return;
   const p = block.querySelector('.citation p');
   const footer = block.querySelector('.citation footer');
-  if (p) p.textContent = quote.excerpt;
-  if (footer) {
+  if (p && !p.textContent.trim()) p.textContent = quote.excerpt;
+  if (footer && !footer.textContent.trim()) {
     footer.textContent = quote.author
       ? `${quote.author}, ${quote.work}${quote.year ? ', ' + quote.year : ''}`
       : 'Sin atribucion: texto provisorio.';
@@ -327,8 +329,8 @@ for (const piece of PIECES) updateReadingColumn(piece.id);
 
 // Creditos: por cita, autor, obra, ano y procedencia verificada.
 {
-  const box = document.getElementById('credits');
-  if (box) {
+  const box = document.querySelector('.credits');
+  if (box && !box.textContent.trim()) {
     box.innerHTML = corpus.texts.map((t) => `
       <div class="credits-item">
         <p class="credits-cite">${escapeHtml(t.excerpt)}</p>

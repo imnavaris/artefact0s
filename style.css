@@ -58,7 +58,8 @@ body{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:20px;lin
 .js .closing{height:80vh}
 .piece-title{font-size:36px;line-height:44px;font-weight:400;letter-spacing:-.01em;margin:0 0 24px}
 .citation{margin:0}
-.citation p{margin:0 0 24px;max-width:62ch;white-space:pre-line}
+.citation p{margin:0 0 24px;max-width:62ch}
+.citation p span{display:block}
 .citation footer{color:var(--ink-2);font-size:16px;line-height:24px}
 .citation footer::before{content:"";display:inline-block;width:24px;height:1px;background:var(--accent);vertical-align:middle;margin-right:8px}
 .notice{color:var(--ink-2);font-size:16px;line-height:24px;margin:24px 0 0}
