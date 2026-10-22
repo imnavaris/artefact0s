@@ -76,6 +76,10 @@ const call = (m, p) => send(m, p, sessionId);
 await call('Page.enable');
 await call('Runtime.enable');
 await call('Log.enable');
+await call('Network.enable');
+// El perfil es persistente: sin esto Chromium puede servir un modulo viejo
+// del cache y la verificacion mide una version que no esta en disco.
+await call('Network.setCacheDisabled', { cacheDisabled: true });
 
 const consoleLines = [];
 ws.addEventListener('message', (ev) => {

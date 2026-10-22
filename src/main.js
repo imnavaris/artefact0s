@@ -129,14 +129,17 @@ const sections = [...document.querySelectorAll('.piece')].map((el) => ({
   state: 0,
 }));
 
-// La pieza activa es la que ocupa el centro de la ventana.
+// La pieza activa es la ultima que ya paso por el centro de la ventana.
+// Con la regla de "la que contiene el centro", el cierre (que no es una
+// pieza) dejaba al escenario en la primera pieza: al final de la obra
+// el colofon se leia sobre el libro.
 function activeIndex() {
   const mid = innerHeight * 0.5;
   let idx = 0;
-  sections.forEach((s, i) => {
-    const rect = s.el.getBoundingClientRect();
-    if (rect.top <= mid && rect.bottom > mid) idx = i;
-  });
+  for (let i = 0; i < sections.length; i++) {
+    const rect = sections[i].el.getBoundingClientRect();
+    if (rect.top <= mid) idx = i;
+  }
   return idx;
 }
 
