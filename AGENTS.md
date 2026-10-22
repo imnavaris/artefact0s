@@ -8,7 +8,7 @@ El vault tiene su propio `AGENTS.md`; este archivo sólo aplica a la carpeta del
 
 Seis objetos (El libro quemado, El Pañuelo, La Silueta, Las Tijeras, Los Pájaros, El Vuelo) sobre la dictadura argentina, renderizados como arte ASCII. **La interactividad está en el texto, no en el modelo.** Es un dispositivo de lectura, no un juego: no hay clic, no hay recompensas, no hay partículas.
 
-El texto que se lee es material real (poesía y literatura del período, citas breves con procedencia). Los textos con `status: "placeholder"` en `assets/texts/texts.json` son relleno de desarrollo: **la obra no se entrega con ellos**.
+El texto que se lee es material real: seis citas de poesía y literatura del período, con procedencia y permiso anotados en `assets/texts/texts.json`. Ese archivo es la **única fuente de verdad**: `server.py` lo inyecta en el documento para que el texto exista aunque no haya JavaScript. Un texto con `status: "placeholder"` es relleno de desarrollo: **la obra no se entrega con ellos**.
 
 ## Cómo se abre
 
@@ -27,8 +27,8 @@ No requiere npm para visualizar: `vendor/` está commiteado. npm sólo hace falt
 | Raster | glyphcss: `Polygon[]` → texto en un `<pre>` del DOM | `vendor/glyphcss.js` |
 | Puente | Three.js `BufferGeometry` → `Polygon[]` con color por cara | `src/geometry.js` |
 | Escena | Escena glyphcss + esculpido del texto sobre la grilla | `src/glyph-stage.js` |
-| Modelos | Los seis artefactos, procedurales | `src/models/*.js` |
-| Servidor | Python stdlib: estático + API de textos | `server.py` |
+| Modelos | Los seis artefactos, procedurales. Cada uno es `update(p)`: una función pura del progreso. | `src/models/*.js` |
+| Servidor | Python stdlib: estático, e inyecta el corpus en el documento | `server.py` |
 
 ## Mapa de archivos
 
@@ -38,15 +38,14 @@ style.css             sistema visual completo (tokens, tipografía, glow, layout
 DESIGN.md             decisiones de diseño e interacción. Manda sobre style.css
 PLAN.md               plan de ejecución por etapas
 AGENTS.md             este archivo
-src/main.js           bootstrap: fuente, corpus, artefacto, escena
+src/main.js           bootstrap: fuente, corpus, seis piezas, scroll, arrastre
 src/geometry.js       conversor Three.js → Polygon[]
 src/glyph-stage.js    escena glyphcss, grilla, esculpido, encuadre
 src/models/*.js       los seis artefactos
-src/ascii.js          OBSOLETO (renderer WebGL viejo) — borrar cuando la migración cierre
-src/input.js          OBSOLETO (arcball viejo) — idem
-assets/texts/         corpus de citas
+assets/texts/         corpus de citas (fuente de verdad del texto)
 assets/fonts/         Sligoil Micro (trama ASCII), Newsreader (lectura)
 vendor/               bundles commiteados: three, motion, glyphcss
+tools/                encuadre y verificación: siluetas, poses, capturas, costo
 docs/                 plan técnico, fuentes, validación
 ```
 
@@ -65,10 +64,15 @@ No romperlas. Cada una tiene una razón y una trampa:
 
 - **Ejes**: Three.js es Y-up, glyphcss es Z-up. El mapeo correcto es `(x, -z, y)`: una **rotación**. La reflexión `(x, z, y)` invierte la orientación de las caras y el objeto sale del reves.
 - **Celda y `<pre>`**: el ancho del `<pre>` tiene que ser exactamente `cols × cellW` de la grilla que resolvió la escena (`handle.getBaseResolution()`). Si no, la última celda envuelve a la fila siguiente y aparece una franja vertical en el borde.
-- **CSS de glyphcss**: la librería inyecta `.glyph-scene .glyph-output { font-family: monospace; font-size: inherit; line-height: 1 }`. Cualquier regla de la trama tiene que usar esa misma especificidad o mayor; `.glyph-output` solo no gana.
+- **CSS de glyphcss**: la librería inyecta `.glyph-scene .glyph-output { font-family: monospace; font-size: inherit; line-height: 1 }` con especificidad 0,2,0. La trama usa **0,3,0** (`.stage .glyph-scene .glyph-output`): si no, el `font-size: inherit` gana y la trama sale a 20 px en vez de 10, y todo el encuadre cambia.
 - **Celdas superpuestas**: las nueve hojas del libro están a menos de una celda de distancia. Sin `depthEpsilon` la trama hierve de z-fighting. Va en `0.02`.
 - **Tipografía**: la fuente falla en silencio. El primer render espera `document.fonts.ready` y mide el avance real de la celda; si la fuente no cargó, se cae a `ui-monospace` con el mismo `font-size`.
-- **Ejes de la cámara**: `rotX`/`rotY` están en **grados**. Cada artefacto tiene su propia pose en `POSES` (`src/main.js`); no hay una pose genérica. Para calibrar una pose sin tocar código: `?rx=90&ry=180`.
+- **Ejes de la cámara**: `rotX`/`rotY` están en **grados**. Cada artefacto tiene su propia pose en `POSES` (`src/main.js`); no hay una pose genérica. Para calibrar una pose sin tocar código: `?piece=book&rx=90&ry=180`.
+- **El encuadre se mide sobre la grilla resuelta**: `stage.resize()` tiene que correr antes de `stage.fit()`. Si se mide antes, la grilla es la de 80×24 del default de glyphcss y la pieza queda diminuta.
+- **El sombreado suave no vale lo que cuesta**: `smoothShading: true` multiplica por siete el costo del raster (52,8 ms contra 9,5) y solo cambia el 0,07 % de los píxeles. Va en `false`.
+- **Sin JavaScript el texto tiene que estar en el DOM**: por eso `server.py` inyecta el corpus en `index.html`. El JS solo completa lo que falta.
+- **`rAF` no corre en headless con `--dump-dom`**: para verificar de verdad, usar el CDP de `tools/cdp.mjs`, que sí ejecuta la página con cuadros reales.
+
 
 ## Comandos
 
