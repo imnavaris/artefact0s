@@ -68,7 +68,7 @@ No romperlas. Cada una tiene una razón y una trampa:
 - **CSS de glyphcss**: la librería inyecta `.glyph-scene .glyph-output { font-family: monospace; font-size: inherit; line-height: 1 }`. Cualquier regla de la trama tiene que usar esa misma especificidad o mayor; `.glyph-output` solo no gana.
 - **Celdas superpuestas**: las nueve hojas del libro están a menos de una celda de distancia. Sin `depthEpsilon` la trama hierve de z-fighting. Va en `0.02`.
 - **Tipografía**: la fuente falla en silencio. El primer render espera `document.fonts.ready` y mide el avance real de la celda; si la fuente no cargó, se cae a `ui-monospace` con el mismo `font-size`.
-- **Ejes de la cámara**: `rotX`/`rotY` están en **grados**. Cada artefacto tiene su propia pose en `POSES` (`src/main.js`); no hay una pose genérica.
+- **Ejes de la cámara**: `rotX`/`rotY` están en **grados**. Cada artefacto tiene su propia pose en `POSES` (`src/main.js`); no hay una pose genérica. Para calibrar una pose sin tocar código: `?rx=90&ry=180`.
 
 ## Comandos
 
