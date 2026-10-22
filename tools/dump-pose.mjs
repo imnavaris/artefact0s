@@ -14,7 +14,7 @@ if (ry !== '' && ry !== undefined) params.push(`ry=${ry}`);
 const url = `http://127.0.0.1:${PORT}/?${params.join('&')}`;
 const html = execFileSync(CHROME, [
   '--headless=new', '--disable-gpu', '--no-sandbox',
-  '--user-data-dir=C:\\Users\\Usuario\\AppData\\Local\\Temp\\opencode\\chromeprofile',
+  `--user-data-dir=${process.env.TEMP}\chromeprofile-${process.pid}`,
   '--window-size=1440,900',
   '--virtual-time-budget=9000',
   '--dump-dom', url,

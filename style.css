@@ -10,8 +10,8 @@
   --accent:#d99b26;
   --hairline:#2e3342;
   --glow:1;
-  --cell-w:6px;
-  --cell-h:10px;
+  --cell-w:8px;
+  --cell-h:14px;
   --ease:cubic-bezier(0.23,1,0.32,1);
 }
 
@@ -44,8 +44,7 @@ body{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:20px;lin
   text-shadow:
     0 0 1px rgba(207,199,184,.45),
     0 0 7px rgba(217,155,38,calc(.16 * var(--glow))),
-    0 0 16px rgba(217,155,38,calc(.07 * var(--glow)));
-}
+    0 0 16px rgba(217,155,38,calc(.07 * var(--glow)));}
 
 /* Columna de lectura. Cada pieza mide 150vh: el bloque se pega, se lee y se suelta.
    Sin JS las secciones se apilan como documento. */

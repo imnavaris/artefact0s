@@ -22,6 +22,7 @@ const chrome = spawn(CHROME, [
   '--disable-backgrounding-occluded-windows',
   '--disable-renderer-backgrounding',
   '--hide-scrollbars',
+  '--force-prefers-reduced-motion=0',
   `--remote-debugging-port=${DEBUG_PORT}`,
   '--user-data-dir=C:\\Users\\Usuario\\AppData\\Local\\Temp\\opencode\\cdp-profile',
   '--window-size=1440,900',
@@ -80,6 +81,9 @@ await call('Network.enable');
 // El perfil es persistente: sin esto Chromium puede servir un modulo viejo
 // del cache y la verificacion mide una version que no esta en disco.
 await call('Network.setCacheDisabled', { cacheDisabled: true });
+// El headless reporta movimiento reducido: la obra cuantiza el estado en
+// cuatro escalones y la verificacion no mide el camino que ve la gente.
+await call('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
 
 const consoleLines = [];
 ws.addEventListener('message', (ev) => {
@@ -106,6 +110,9 @@ async function evaluate(expr) {
 async function goto(url) {
   await call('Page.navigate', { url });
   await sleep(2500);
+  // El perfil es persistente: el navegador restaura el scroll de la sesion
+  // anterior y la captura sale del final de la obra.
+  await evaluate("history.scrollRestoration='manual'; scrollTo(0,0); 1");
 }
 
 if (order === 'scroll') {
@@ -140,7 +147,23 @@ if (order === 'scroll') {
   console.log(JSON.stringify(report, null, 1));
   console.log('CONSOLA:', consoleLines.length ? consoleLines.join('\n') : 'limpia');
 } else if (order === 'shot') {
-  await goto(`http://127.0.0.1:${PORT}/`);
+  //   shot <salida.png> [pieza] [p] [rx] [ry]
+  const piece = args[1] || '';
+  const p = args[2] || '';
+  const rx = args[3] || '';
+  const ry = args[4] || '';
+  const params = [];
+  if (piece) params.push(`piece=${piece}`);
+  if (p !== '') params.push(`p=${p}`);
+  if (rx !== '') params.push(`rx=${rx}`);
+  if (ry !== '') params.push(`ry=${ry}`);
+  await goto(`http://127.0.0.1:${PORT}/${params.length ? '?' + params.join('&') : ''}`);
+  // Se espera a que la escena tenga glifos: capturar antes muestra el
+  // calentamiento, con la trama sin inscripcion.
+  await evaluate("new Promise(r => { const t0 = Date.now(); const t = setInterval(() => { const o = document.querySelector('.glyph-output'); if ((o && o.textContent.trim().length > 200) || Date.now() - t0 > 8000) { clearInterval(t); r(1); } }, 100); })");
+  await sleep(600);
+  const state = await evaluate("[scrollY, window.__artefactos.stage.lines, document.querySelector('.glyph-output').textContent.replace(/\\s/g,'').slice(0,60), window.__artefactos.stage.burn, window.__artefactos.stage.extent, window.__artefactos.sections.map(s=>+s.state.toFixed(2)), window.__artefactos.models.get('book').burn(0.5)]");
+  console.log('ESTADO:', JSON.stringify(state));
   const { data } = await call('Page.captureScreenshot', { format: 'png' });
   writeFileSync(args[0], Buffer.from(data, 'base64'));
   console.log(args[0]);

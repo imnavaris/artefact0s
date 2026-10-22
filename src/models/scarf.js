@@ -48,14 +48,16 @@ export function createScarf(){
    c.fillStyle=g;c.fillRect(0,0,w,h);
   },{roughness:.7,metalness:.05},128,128);
 
-  const head=part(root,new T.SphereGeometry(.40,28,22),headMat,[0,.10,0]);
-  head.scale.set(.92,1.10,.94);
+  // La cabeza: chica y oscura. Queda tapada por arriba: la cara se ve.
+  const head=part(root,new T.SphereGeometry(.28,28,22),headMat,[0,.06,0]);
+  head.scale.set(1,1.15,1);
 
-  const knot=part(root,new T.SphereGeometry(.17,20,16),knotMat,[.34,-.02,.26]);
-  knot.scale.set(1.15,.85,1);
+  // El nudo, bajo el menton: de ahi salen las dos puntas.
+  const knot=part(root,new T.SphereGeometry(.13,20,16),knotMat,[.04,-.08,.22]);
+  knot.scale.set(1.3,.75,1);
 
-  // El pañuelo: una malla triangular que en p=0 se apoya abombada sobre la
-  // cabeza y en p=1 se despliega plana en el triángulo del pañuelo.
+  // El pañuelo: una malla que en p=0 es la capucha que envuelve la cabeza y
+  // en p=1 es el triángulo del pañuelo.
   const nu=40,nv=36;
   const cloth=surface(root,nu,nv,()=>[0,0,0],clothMat);
 
@@ -74,11 +76,32 @@ export function createScarf(){
    A[2]*(1-v)+(B[2]*(1-u)+C[2]*u)*v
   ];
 
-  // Dos puntas colgando, que son las del pañuelo anudado.
+  // La capucha anudada: media esfera sobre el craneo, con el borde al frente
+  // de la frente. La cara queda a la vista: sin eso la pieza es un huevo.
+  const cap=(u,v)=>{
+   const a=v*Math.PI*.5;
+   const y=.06+.31*Math.cos(a);
+   const r=.31*Math.sin(a);
+   const phi=-1.95+u*2.85;
+   return [Math.sin(phi)*r,y,Math.cos(phi)*r];
+  };
+
+  // Dos puntas colgando del nudo: las del pañuelo atado.
   const tails=[];
   for(const s of [-1,1]){
    tails.push({s,m:surface(root,18,22,()=>[0,0,0],shadeMat)});
   }
+
+  // Una punta: tira que cae del nudo, se abre en abanico y termina en punta.
+  const tail=(u,v,s)=>{
+   const w=(.055+v*.055)*(1-.5*Math.pow(v,8));
+   const side=(u-.5)*2;
+   return [
+    .04+s*v*.13+side*w,
+    -.10-v*.36,
+    .16-v*.10+side*w*.3
+   ];
+  };
 
   return {
    root,
@@ -90,42 +113,30 @@ export function createScarf(){
 
     morph(cloth,nu,nv,(u,v)=>{
      const t=tri(u,v);
-     // Posición abombada: la tela apoya sobre el cráneo, con la misma caja
-     // que el triángulo desplegado.
-     const dx=t[0]-cx,dy=t[1]-(cy+.16);
-     const r=Math.min(1,Math.hypot(dx,dy)/R);
-     const dome=Math.sqrt(Math.max(0,1-r*r))*.24;
-     const wrapped=[t[0]*.86,cy+.16+(t[1]-(cy+.16))*.80,dome+.24];
-     // Desplegada, la tela cuelga en arco: un triángulo plano se leeria de
+     // Desplegada, la tela cuelga en arco: un triangulo plano se leeria de
      // canto y no se veria nada. El arco le da cuerpo desde cualquier vista.
-     const bow=.30*Math.sin(Math.PI*u);
-     const ripple=.035*Math.sin(u*9+v*4);
-     const open3=[
-      t[0],
-      t[1],
-      t[2]+bow+ripple+.10
-     ];
+     const bow=.16*Math.sin(Math.PI*u);
+     const ripple=.03*Math.sin(u*9+v*4);
+     const open3=[t[0],t[1],t[2]+bow+ripple+.06];
+     const c=cap(u,v);
      return [
-      wrapped[0]+(open3[0]-wrapped[0])*open,
-      wrapped[1]+(open3[1]-wrapped[1])*open,
-      wrapped[2]+(open3[2]-wrapped[2])*open
+      c[0]+(open3[0]-c[0])*open,
+      c[1]+(open3[1]-c[1])*open,
+      c[2]+(open3[2]-c[2])*open
      ];
     });
 
     tails.forEach(({s,m})=>{
      morph(m,18,22,(u,v)=>{
-      const side=(u-.5)*2;
-      const w=Math.sin(Math.pow(v,.8)*Math.PI)*.16;
-      // Caída de la punta junto al nudo.
-      const x=.32+s*(.13+side*w*1.4);
-      const y=-.05-v*.62;
-      const z=.24-side*w*.5;
-      // Al desplegarse, las puntas se guardan en el pliegue del triángulo.
-      const gx=s>0?.09:-.09;
+      const t=tail(u,v,s);
+      // Al desplegarse, las puntas se guardan en el pliegue del triangulo.
+      const gx=s>0?.08:-.08;
+      const gy=-.16;
+      const gz=.05;
       return [
-       x+(gx-x)*open,
-       y+(.18-y)*open,
-       z+(.06-z)*open
+       t[0]+(gx-t[0])*open,
+       t[1]+(gy-t[1])*open,
+       t[2]+(gz-t[2])*open
       ];
      });
     });
@@ -133,9 +144,9 @@ export function createScarf(){
     // La cabeza y el nudo se ocultan al desplegarse la tela.
     const vis=knotT>.12;
     head.visible=vis;
-    head.scale.set(.92*knotT,1.10*knotT,.94*knotT);
+    head.scale.set(knotT,1.15*knotT,knotT);
     knot.visible=vis;
-    knot.scale.set(1.15*knotT,.85*knotT,1*knotT);
+    knot.scale.set(1.3*knotT,.75*knotT,1*knotT);
    }
   };
 }

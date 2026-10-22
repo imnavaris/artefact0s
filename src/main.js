@@ -20,13 +20,13 @@ const PIECES = [
 
 // Pose de camara por artefacto: rotX/rotY en grados, zoom en celdas por
 // unidad. Cada pieza tiene su propia vista; no hay pose generica.
-// Las poses se calibraron leyendo la silueta en texto plano
-// (tools/dump-pose.mjs, tools/find-pose.mjs): el libro se lee abierto con el
-// lomo al medio (rotY 90), la silueta de persona de frente (rotY 90) y las
-// tijeras y el avion de perfil (rotY 30).
+// Las poses se calibraron mirando la pieza rasterizada (tools/cdp.mjs shot):
+// el libro se lee abierto con el lomo al medio (rotY 90), el pañuelo de frente
+// para que el triangulo se lea de cara (rotY 90), la silueta de persona de
+// frente (rotY 90) y las tijeras y el avion de perfil (rotY 30).
 const POSES = {
   book: { rotX: 70, rotY: 90, zoom: 120 },
-  scarf: { rotX: 20, rotY: 30, zoom: 120 },
+  scarf: { rotX: 80, rotY: 90, zoom: 120 },
   silhouette: { rotX: 80, rotY: 90, zoom: 120 },
   scissors: { rotX: 60, rotY: 30, zoom: 120 },
   birds: { rotX: 40, rotY: 0, zoom: 120 },
@@ -46,13 +46,14 @@ addEventListener('unhandledrejection', (e) => errors.push(`rejection: ${e.reason
 // mide el avance real de la celda antes de calcular la grilla.
 await document.fonts.ready;
 const probe = document.createElement('span');
-probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font-size:10px';
+probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font-size:14px';
 probe.style.fontFamily = "'Sligoil Micro',ui-monospace,'Cascadia Mono',Consolas,monospace";
 probe.textContent = 'MMMMMMMMMM';
 document.body.appendChild(probe);
 const cellW = probe.getBoundingClientRect().width / 10;
 probe.remove();
-stage.setCellMetrics(cellW || 6, 10);
+// La trama va con celda de 14 px: a 10 px el poema no se leia de lejos.
+stage.setCellMetrics(cellW || 8, 14);
 
 const corpus = await fetch('assets/texts/texts.json').then((r) => r.json());
 const quoteFor = (id) => corpus.texts.find((t) => t.piece === id);
@@ -106,11 +107,7 @@ const FREEZE_HI = 0.85;
 
 // p local: progreso de la seccion, con aire de lectura al principio y al final.
 function progressOf(section) {
-  const rect = section.getBoundingClientRect();
-  const top = rect.top + scrollY;
-  const travel = section.offsetHeight - innerHeight;
-  if (travel <= 0) return 0;
-  return clamp((scrollY - top) / travel, 0, 1);
+  return clamp((scrollY - section.top) / section.travel, 0, 1);
 }
 
 // El estado se congela fuera de [FREEZE_LO, FREEZE_HI]: la pieza tiene aire.
@@ -127,18 +124,42 @@ const sections = [...document.querySelectorAll('.piece')].map((el) => ({
   id: el.dataset.piece,
   p: 0,
   state: 0,
+  top: 0,
+  travel: 1,
 }));
+
+// Las medidas se cachean: leer el layout en cada cuadro fuerza un reflow y
+// el scroll se siente trabado. Se miden al cargar y en cada resize.
+function measureSections() {
+  for (const s of sections) {
+    s.top = docTop(s.el);
+    s.travel = Math.max(1, s.el.offsetHeight - innerHeight);
+  }
+}
+
+// Posicion del elemento en el documento, sin depender del scroll actual:
+// con getBoundingClientRect, una recarga a mitad de la obra (el navegador
+// restaura el scroll) deja las secciones mal medidas.
+function docTop(el) {
+  let y = 0;
+  let node = el;
+  while (node) {
+    y += node.offsetTop;
+    node = node.offsetParent;
+  }
+  return y;
+}
+measureSections();
 
 // La pieza activa es la ultima que ya paso por el centro de la ventana.
 // Con la regla de "la que contiene el centro", el cierre (que no es una
 // pieza) dejaba al escenario en la primera pieza: al final de la obra
 // el colofon se leia sobre el libro.
 function activeIndex() {
-  const mid = innerHeight * 0.5;
+  const mid = scrollY + innerHeight * 0.5;
   let idx = 0;
   for (let i = 0; i < sections.length; i++) {
-    const rect = sections[i].el.getBoundingClientRect();
-    if (rect.top <= mid) idx = i;
+    if (sections[i].top <= mid) idx = i;
   }
   return idx;
 }
@@ -160,7 +181,9 @@ function applyPiece(index) {
   stage.camera.zoom = pose.zoom;
 
   const quote = quoteFor(section.id);
-  stage.setText(quote ? quote.excerpt : '');
+  // La inscripcion puede ser distinta del fragmento de lectura: el panuelo
+  // lleva la consigna, la columna de lectura lleva el poema.
+  stage.setText(quote ? (quote.inscription || quote.excerpt) : '');
 
   document.querySelectorAll('.piece').forEach((el) => el.classList.toggle('is-active', el === section.el));
   current = index;
@@ -178,6 +201,9 @@ function redraw() {
   if (!section) return;
   const model = models.get(section.id);
   model.update(section.state);
+  // La quema se declara antes del raster: el frente de fuego se escribe en
+  // los glifos de la misma pasada.
+  stage.setBurn(model.burn ? model.burn(section.state) : 0);
   stage.setPolygons(toGlyphPolygons(model.root));
 }
 
@@ -195,7 +221,7 @@ function frame(now) {
 
   const section = sections[current];
   if (!section) { requestAnimationFrame(frame); return; }
-  let target = debugP !== null ? debugP : stateOf(progressOf(section.el));
+  let target = debugP !== null ? debugP : stateOf(progressOf(section));
   // Movimiento reducido: el estado salta en cuatro escalones, sin morphing.
   if (reduceMotion) target = Math.round(target * 3) / 3;
   const prev = damped.get(section.id) ?? target;
@@ -207,12 +233,12 @@ function frame(now) {
 
   // La geometria se reconstruye solo cuando el estado cambio lo bastante:
   // convertir 19.000 triangulos cuesta ~16 ms y no vale la pena por centesimas.
-  if (Math.abs(next - section.state) > 0.008) {
+  if (Math.abs(next - section.state) > 0.018) {
     section.state = next;
     redraw();
     updateGlow(next);
   }
-  updateParallax(progressOf(section.el));
+  updateParallax(progressOf(section));
 
   requestAnimationFrame(frame);
 }
@@ -229,9 +255,11 @@ function updateGlow(state) {
 }
 
 // Parallax del objeto: -3% a +3%. El texto legible no se mueve.
+let sceneEl = null;
 function updateParallax(p) {
-  const scene = host.querySelector('.glyph-scene');
-  if (scene) scene.style.transform = `translate3d(0,${(p - 0.5) * 6}%,0)`;
+  if (reduceMotion) return;
+  if (!sceneEl) sceneEl = host.querySelector('.glyph-scene');
+  if (sceneEl) sceneEl.style.transform = `translate3d(0,${(p - 0.5) * 6}%,0)`;
 }
 
 // --------------------------------------------------------------- arrastre ----
@@ -258,9 +286,12 @@ host.addEventListener('pointermove', (e) => {
   const dy = e.clientY - lastY;
   lastX = e.clientX;
   lastY = e.clientY;
-  // Tope elastico: fuera de rango la pieza se resiste, no rebota.
-  yaw = clamp(yaw + dx * 0.25, -35, 35);
-  pitch = clamp(pitch + dy * 0.12, -12, 12);
+  // Rotacion libre: la pieza da vueltas completas y se puede mirar de
+  // cualquier angulo. El pitch tiene tope porque mas alla la camara mira al
+  // piso. No hay rebote: la rotacion se queda donde quedo.
+  yaw += dx * 0.25;
+  if (Math.abs(yaw) > 3600) yaw -= Math.trunc(yaw / 360) * 360;
+  pitch = clamp(pitch + dy * 0.12, -90, 90);
   const pose = poseOf(sections[current].id);
   stage.camera.rotX = pose.rotX + pitch;
   stage.camera.rotY = pose.rotY + yaw;
@@ -293,6 +324,7 @@ window.addEventListener('keydown', (e) => {
 const fit = () => {
   stage.resize(host.clientWidth, host.clientHeight);
   stage.fitCache.clear();
+  measureSections();
   const section = sections[current];
   if (section) {
     const model = models.get(section.id);
@@ -339,6 +371,7 @@ for (const piece of PIECES) updateReadingColumn(piece.id);
         <p class="credits-cite">${escapeHtml(t.excerpt)}</p>
         <p class="credits-meta">${escapeHtml(t.author)}${t.work ? ', ' + escapeHtml(t.work) : ''}${t.year ? ', ' + t.year : ''}. ${escapeHtml(t.source || '')}</p>
         <p class="credits-meta">${escapeHtml(t.license || '')}</p>
+        ${t.inscription ? `<p class="credits-meta">Inscripción de la pieza: ${escapeHtml(t.inscription)}. ${escapeHtml(t.inscription_source || '')}</p>` : ''}
       </div>`).join('');
   }
 }

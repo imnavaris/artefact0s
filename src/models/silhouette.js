@@ -59,22 +59,20 @@ export function createSilhouette(){
 
   root.rotation.y=.08;
 
-  // La figura se borra saliendo del encuadre hacia arriba: no se atenua el
-  // color, porque una atenuacion se lee como un brillo y no como una ausencia.
-  const baseY=root.position.y;
-
   return {
    root,
    kind:'silhouette',
+   // La figura se borra en el sitio: no sale del encuadre, se apaga. La altura
+   // cae antes que el ancho, asi que la persona se aplasta hasta quedar una
+   // linea y recien ahi desaparece.
    update(p){
     const gone=p*p*(3-2*p);
-    root.position.y=baseY+gone*3.4;
-    root.scale.setScalar(1-gone*.12);
-    const reliefs=p>.6;
+    root.scale.set(1-gone*.82,1-gone*.97,1-gone*.72);
+    const reliefs=p>.32;
     headRelief.visible=reliefs;
     chestRelief.visible=reliefs;
-    innerMesh.visible=p<.92;
-    stencil.visible=p<1;
+    innerMesh.visible=p<.72;
+    stencil.visible=p<.99;
    }
   };
 }

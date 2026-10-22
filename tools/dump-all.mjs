@@ -19,7 +19,7 @@ for (const piece of pieces) {
   const url = `http://127.0.0.1:${PORT}/?piece=${piece}&p=${p}`;
   const html = execFileSync(CHROME, [
     '--headless=new', '--disable-gpu', '--no-sandbox',
-    '--user-data-dir=C:\\Users\\Usuario\\AppData\\Local\\Temp\\opencode\\chromeprofile',
+    `--user-data-dir=${process.env.TEMP}\chromeprofile-${process.pid}`,
     `--window-size=${width},${height}`,
     '--virtual-time-budget=9000',
     '--dump-dom', url,

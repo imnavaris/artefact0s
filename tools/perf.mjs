@@ -12,6 +12,7 @@ const chrome = spawn(CHROME, [
   '--headless=new', '--disable-gpu', '--no-sandbox',
   '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows',
   '--disable-renderer-backgrounding', '--hide-scrollbars',
+  '--force-prefers-reduced-motion=0',
   `--remote-debugging-port=${DEBUG_PORT}`,
   '--user-data-dir=C:\\Users\\Usuario\\AppData\\Local\\Temp\\opencode\\cdp-profile-perf',
   '--window-size=1440,900', 'about:blank',

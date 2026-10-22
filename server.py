@@ -9,6 +9,7 @@ import http.server
 import json
 from pathlib import Path
 import argparse
+import urllib.parse
 
 ROOT = Path(__file__).resolve().parent
 CORPUS = ROOT / 'assets' / 'texts' / 'texts.json'
@@ -55,10 +56,16 @@ def build_credits():
             text.get('work'),
             str(text['year']) if text.get('year') else None,
         ]))
+        inscription = ''
+        if text.get('inscription'):
+            inscription = (
+                f'\n          <p class="credits-meta">Inscripción de la pieza: '
+                f'{text["inscription"]}. {text.get("inscription_source", "")}</p>'
+            )
         blocks.append(f'''        <div class="credits-item">
           <p class="credits-cite">{text['excerpt']}</p>
           <p class="credits-meta">{attribution}. {text.get('source', '')}</p>
-          <p class="credits-meta">{text.get('license', '')}</p>
+          <p class="credits-meta">{text.get('license', '')}</p>{inscription}
         </div>''')
     return '\n'.join(blocks)
 
@@ -70,11 +77,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         # El navegador pide favicon.ico aunque el documento traiga un icono
         # embebido: sin esto, la consola de la obra muestra un 404.
-        if self.path == '/favicon.ico':
+        path = urllib.parse.urlparse(self.path).path
+        if path == '/favicon.ico':
             self.send_response(204)
             self.end_headers()
             return
-        if self.path in ('/', '/index.html'):
+        if path in ('/', '/index.html'):
             return self.send_index()
         super().do_GET()
 

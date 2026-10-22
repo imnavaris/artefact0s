@@ -1,13 +1,29 @@
 import { createGlyphScene, createGlyphOrthographicCamera } from 'glyphcss';
 
-const CELL_W = 6;   // px de avance de la celda (se recalibra con la fuente real)
-const CELL_H = 10;  // px de alto de línea
+const CELL_W = 8;   // px de avance de la celda (se recalibra con la fuente real)
+const CELL_H = 14;  // px de alto de línea
+
+// El fuego se simula con glifos, no con partículas: el frente de llama y la
+// ceniza que deja atrás.
+const FLAME = '^/\\|*~"';
+const ASH = ".,";
+
+// Ruido determinista por celda: el frente de fuego no puede ser una recta.
+function wobble(c) {
+  return Math.sin(c * 0.83) * 1.4 + Math.sin(c * 0.27 + 1.7) * 2.1;
+}
+
+function hash(r, c) {
+  return Math.abs((r * 73856093) ^ (c * 19349663));
+}
 
 // Escenario ASCII: una escena de glyphcss que escribe en un unico <pre>.
 export class GlyphStage {
   constructor(host, opts = {}) {
     this.host = host;
     this.text = '';
+    this.lines = [];
+    this.burn = 0;
     this.extent = null;
     this.cellW = CELL_W;
     this.cellH = CELL_H;
@@ -41,9 +57,20 @@ export class GlyphStage {
 
   get output() { return this.handle.output; }
 
+  // La inscripcion se arma por versos: las palabras se separan con un punto
+  // medio y cada verso es una linea, para que se lea como poema.
   setText(text) {
-    this.chars = [...String(text || '')].filter((c) => c.trim().length > 0);
+    this.lines = String(text || '')
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.split(/\s+/).join('·'));
     this.text = text;
+  }
+
+  // Avance de la quema: lo usa el frente de fuego de la inscripcion.
+  setBurn(value) {
+    this.burn = value > 0 ? (value < 1 ? value : 1) : 0;
   }
 
   // Pintar el texto sobre la silueta: cada celda ocupada recibe un caracter.
@@ -60,13 +87,44 @@ export class GlyphStage {
       }
     }
     this.extent = maxC < 0 ? null : { minC, maxC, minR, maxR };
-    const chars = this.chars;
-    if (!chars || !chars.length) return;
-    if (this.noSculpt) return;
-    let k = 0;
-    for (let i = 0; i < grid.char.length; i++) {
-      if (grid.char[i] === ' ' || grid.depth[i] === -Infinity) continue;
-      grid.char[i] = chars[k++ % chars.length];
+    const lines = this.lines;
+    if (!lines || !lines.length) return;
+    // Con una sola linea el texto se repite para llenar la fila: con varias,
+    // cada verso arranca en una fila y el resto de la fila queda libre.
+    const single = lines.length === 1;
+    let li = 0, ci = 0;
+    for (let r = 0; r < grid.rows; r++) {
+      let wrote = false;
+      for (let c = 0; c < grid.cols; c++) {
+        const i = r * grid.cols + c;
+        if (grid.char[i] === ' ' || grid.depth[i] === -Infinity) continue;
+        if (wrote && ci >= lines[li].length && !single) break;
+        if (ci >= lines[li].length) { li = (li + 1) % lines.length; ci = 0; }
+        const line = lines[li];
+        if (!line.length) continue;
+        grid.char[i] = line[ci++];
+        wrote = true;
+      }
+    }
+    this.burnCells(grid);
+  }
+
+  // El frente de fuego avanza desde el borde superior de la silueta: delante,
+  // llama; detras, ceniza. Donde llega el fuego, el poema se consume.
+  burnCells(grid) {
+    if (this.burn <= 0 || !this.extent) return;
+    const e = this.extent;
+    const rows = e.maxR - e.minR + 1;
+    for (let r = e.minR; r <= e.maxR; r++) {
+      for (let c = e.minC; c <= e.maxC; c++) {
+        const i = r * grid.cols + c;
+        if (grid.char[i] === ' ' || grid.depth[i] === -Infinity) continue;
+        const d = e.minR + this.burn * rows * 1.05 + wobble(c) - r;
+        if (d <= 0) continue;
+        grid.char[i] = d > 4
+          ? ASH[hash(r, c) % ASH.length]
+          : FLAME[hash(r, c) % FLAME.length];
+      }
     }
   }
 
@@ -81,7 +139,7 @@ export class GlyphStage {
     this.handle.rerender();
   }
 
-  // Ajusta el zoom para que el objeto entre en la grilla en los dos ejes.
+  // Ajustar el zoom para que el objeto entre en la grilla en los dos ejes.
   // El ajuste es de dos renders, no de cinco: iterar cinco veces costaba un
   // pico de 86 ms en cada cambio de pieza.
   fit(targetW = 0.72, targetH = 0.82) {
@@ -108,8 +166,12 @@ export class GlyphStage {
       this.fit(targetW, targetH);
       this.fitCache.set(key, this.camera.zoom);
     } else {
-      this.camera.zoom = this.fitCache.get(key);
-      this.handle.rerender();
+      const zoom = this.fitCache.get(key);
+      // Sin cambio de zoom no hace falta rasterizar otra vez.
+      if (Math.abs(zoom - this.camera.zoom) > 0.001) {
+        this.camera.zoom = zoom;
+        this.handle.rerender();
+      }
     }
     return this.camera.zoom;
   }

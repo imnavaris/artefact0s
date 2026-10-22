@@ -21,7 +21,7 @@ for (const rx of rxs) {
     try {
       html = execFileSync(CHROME, [
         '--headless=new', '--disable-gpu', '--no-sandbox',
-        '--user-data-dir=C:\\Users\\Usuario\\AppData\\Local\\Temp\\opencode\\chromeprofile',
+        `--user-data-dir=${process.env.TEMP}\chromeprofile-${process.pid}`,
         '--window-size=1440,900',
         '--virtual-time-budget=5000',
         '--dump-dom', url,

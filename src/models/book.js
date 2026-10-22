@@ -81,6 +81,25 @@ export function createBook(){
    }
   },{roughness:.86,metalness:.02});
 
+  // El frente de fuego: la hoja que se esta quemando todavia tiene brasa.
+  const emberMat=texMat((c,w,h)=>{
+   const g=c.createLinearGradient(0,0,w*.3,h);
+   g.addColorStop(0,'#e8862c');
+   g.addColorStop(.28,'#c2551a');
+   g.addColorStop(.6,'#5d2410');
+   g.addColorStop(1,'#22120b');
+   c.fillStyle=g;c.fillRect(0,0,w,h);
+   c.strokeStyle='rgba(255,196,92,0.7)';
+   c.lineWidth=2;
+   for(let i=0;i<9;i++){
+    const y=10+i*(h-20)/8;
+    c.beginPath();
+    c.moveTo(w*.06,y);
+    c.bezierCurveTo(w*.3,y-10,w*.5,y+12,w*.82,y-4);
+    c.stroke();
+   }
+  },{roughness:.8,metalness:.02});
+
   const pages=[];
 
   // Curved central spine (lomo) with golden binding ribs so contratapa is 100% solid
@@ -114,10 +133,12 @@ export function createBook(){
    box(half,[1.56,.20,2.02],pageBlockMat,[sign*.80,.09,0]);
 
    // Arched pages on top. El paso entre hojas es de 0,05 unidades (una celda):
-   // con menos, las nueve hojas se pisan y la trama hierve.
+   // con menos, las nueve hojas se pisan y la trama hierve. La malla es de
+   // 18x14: con 26x20 el libro tenia 19.000 triangulos y la conversion
+   // costaba 16 ms por cuadro, que es lo que hacia trabar el scroll.
    for(let n=0;n<9;n++){
     const height=.18+n*.05;
-    const page=surface(half,26,20,(u,v)=>{
+    const page=surface(half,18,14,(u,v)=>{
      const arch=Math.sin(u*Math.PI)*(.18+n*.014)-u*.04;
      return [sign*(.02+u*1.56),height+arch,(v-.5)*1.98];
     },paperMat,sign<0);
@@ -132,21 +153,29 @@ export function createBook(){
   // La quema arranca por la hoja mas alta de cada tanda.
   const burnOrder=[...pages].sort((a,b)=>b.n-a.n);
 
+  // Cada hoja tarda una fraccion del recorrido en quemarse y las hojas se
+  // escalonan: si todas arden a la vez, el libro no llega a leerse quemandose.
+  const SPAN=.55;
+  const burnAt=(i,p)=>{
+   const start=(i/burnOrder.length)*(1-SPAN);
+   return clamp01((p-start)/SPAN);
+  };
+
   return {
    root,
    kind:'book',
    // El estado es funcion del progreso: bajar el scroll deshace la quema.
    update(p){
     burnOrder.forEach((pg,i)=>{
-     const amount=clamp01(p*burnOrder.length-i);
+     const amount=burnAt(i,p);
      const {mesh,sign,n,height}=pg;
-     mesh.material=amount>.5?charMat:paperMat;
-     morph(mesh,26,20,(u,v)=>{
+     mesh.material=amount>=1?charMat:amount>0?emberMat:paperMat;
+     morph(mesh,18,14,(u,v)=>{
       const arch=Math.sin(u*Math.PI)*(.18+n*.014)-u*.04;
       // La hoja carbonizada se encoge y sus bordes se levantan.
-      const shrink=1-.22*amount;
-      const curl=amount*.16*Math.sin(u*Math.PI)*Math.pow(v,2);
-      const edge=amount*.10*Math.pow(Math.abs(u-.5)*2,3);
+      const shrink=1-.34*amount;
+      const curl=amount*.30*Math.sin(u*Math.PI)*Math.pow(v,2);
+      const edge=amount*.22*Math.pow(Math.abs(u-.5)*2,3);
       return [
        sign*(.02+u*1.56*shrink),
        height+arch+curl+edge,
@@ -154,6 +183,12 @@ export function createBook(){
       ];
      });
     });
+   },
+   // El motor usa esto para pintar el frente de fuego en los glifos.
+   burn(p){
+    let sum=0;
+    for(let i=0;i<burnOrder.length;i++)sum+=burnAt(i,p);
+    return sum/burnOrder.length;
    }
   };
 }
