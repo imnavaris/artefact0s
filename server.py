@@ -15,6 +15,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
+    def do_GET(self):
+        # El navegador pide favicon.ico aunque el documento traiga un icono
+        # embebido: sin esto, la consola de la obra muestra un 404.
+        if self.path == '/favicon.ico':
+            self.send_response(204)
+            self.end_headers()
+            return
+        super().do_GET()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

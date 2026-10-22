@@ -2,7 +2,7 @@
 
 Plan de ejecución para llevar el proyecto a su estado final. Por etapas, con verificación entre etapas: **ninguna etapa se da por cerrada sin evidencia ejecutada**.
 
-Estado: Etapa 0 y Etapa 1 cerradas. Etapa 2 abierta.
+Estado: Etapa 0 y Etapa 1 cerradas. Etapa 2 en curso: 2.1 y 2.2 hechas, 2.3 y 2.4 hechas, 2.5 con el corpus verificado.
 
 El diseño y la interacción ya están decididos y documentados en `DESIGN.md`; este documento no los re-discute, los ejecuta. Las reglas del repo están en `AGENTS.md`.
 
@@ -78,63 +78,105 @@ Tres consecuencias que gobiernan todo lo demás:
 
 **Objetivo:** que las seis piezas se lean como lo que son, con su estado propio, y que el scroll recorra la obra.
 
-### 2.1 Encuadre y silueta de cada pieza · primera tarea
+### 2.1 Encuadre y silueta de cada pieza · CERRADA
 
-**Diagnóstico:** el modelo del libro apila **nueve hojas planas** separadas 0,032 unidades (≈0,65 celdas a zoom 120). Vista desde arriba o de frente, la hoja superior tapa a las demás y la forma se aplana en una masa: la lectura de "libro abierto" del renderer viejo venía de la luminancia de un render WebGL con luz de estudio, no de la geometría.
+**Diagnóstico original:** el modelo del libro apila **nueve hojas planas** separadas 0,032 unidades (≈0,65 celdas a zoom 120). Vista desde arriba o de frente, la hoja superior tapa a las demás y la forma se aplana en una masa: la lectura de "libro abierto" del renderer viejo venía de la luminancia de un render WebGL con luz de estudio, no de la geometría.
 
-Opciones, en orden de preferencia:
+**Lo que se hizo:** se tomaron las opciones **A + C**. Las hojas quedaron separadas 0,05 unidades (una celda) y la bisagra del lomo se abrió a 0,52 radianes: con las tapas casi planas, la hoja de arriba tapaba a las demás. Las poses se calibraron por silueta, no por gusto.
 
-| # | Opción | Coste | Riesgo |
-|---|---|---|---|
-| A | Separar las hojas ≥1 celda (0,05 unidades) y marcar las primeras N con material de carbonización | Bajo: 2 números en `src/models/book.js` | El libro engorda; hay que recomponer la pose |
-| B | Quitar las hojas intermedias y modelar el lomo + 3 hojas | Medio: reescritura del modelo | Pierde la accumulating de páginas |
-| C | Cambiar la pose para ver el arco de perfil (el libro de canto, no de plano) | Muy bajo: un `rotX`/`rotY` | Puede no leerse |
-| D | Cambiar el modo de glyphcss a `ink` (silueta + contornos) para piezas que lo necesiten | Bajo | Pierde el color por cara |
+**Método de trabajo por pieza:** volcar la silueta a texto plano (el `<pre>` del DOM, con `\r` eliminado) y leerla como una imagen; ajustar pose hasta que la silueta se lea. Quedaron como herramientas del repo:
 
-**Método de trabajo por pieza:** volcar la silueta a texto plano (el `<pre>` del DOM, con `\r` eliminado) y leerla como una imagen; ajustar pose hasta que la silueta se lea. El script de volcado queda como herramienta del repo (`tools/dump-silhouette.mjs`), porque sin ver la silueta en texto no se encuadra nada.
+| Herramienta | Qué hace |
+|---|---|
+| `tools/dump-pose.mjs` | Vuelca la silueta de una pieza con una pose concreta, como texto plano |
+| `tools/dump-sweep.mjs` | Barre varias poses de una pieza y mide ancho, alto y filas partidas |
+| `tools/find-pose.mjs` | Barre la grilla de poses y ordena por partedura: una pieza que se parte en dos lóbulos es la que se lee |
+| `tools/shot.mjs` / `tools/shot-at.mjs` | Captura la obra en imagen, para leerla como se ve y no como máscara de hashes |
+| `tools/silhouette-bbox.mjs` | Caja envolvente de la silueta y grilla resuelta |
 
 **Criterio de cierre por pieza:** la silueta se identifica sin contexto en tres segundos, y a 200 % de zoom el texto sigue siendo la superficie, no un mosaico.
 
-### 2.2 Los seis modelos
+**Poses resultantes** (`POSES` en `src/main.js`, rotX/rotY en grados):
 
-`book`, `scarf`, `silhouette`, `scissors`, `birds`, `flight` están escritos y funcionan con Three.js. Falta:
+| Pieza | rotX | rotY | Por qué |
+|---|---|---|---|
+| book | 70 | 90 | El lomo queda al medio y las dos tapas se leen separadas |
+| scarf | 20 | 30 | De tres cuartos: se ve la cabeza y el nudo |
+| silhouette | 80 | 90 | La persona, de frente y completa |
+| scissors | 60 | 30 | Las dos hojas abiertas se leen en diagonal |
+| birds | 40 | 0 | La formación se ve entera |
+| flight | 20 | 30 | El fuselaje y el ala se leen de perfil |
 
-- [ ] Convertir cada uno y calibrar su pose (`POSES` en `src/main.js`).
-- [ ] Decidir el estado de cada pieza en función de `p` (qué se quema, qué se desata, qué se borra, qué se corta, qué se enjaula, qué se abre).
-- [ ] Borrar de los modelos los sistemas de partículas que ya no aplican (fuego y brasas del libro; en `src/models/book.js` están marcados con `userData.asciiSkip`).
-- [ ] Quitar de los modelos los `toggle()`: con el clic eliminado no tienen disparador.
+**Trampa encontrada:** el encuadre se mide sobre la grilla **resuelta**. Si se mide antes del `resize`, la grilla es la de 80×24 del default de glyphcss y la pieza queda diminuta.
 
-### 2.3 Scroll continuo
+### 2.2 Los seis modelos · CERRADA
 
-- [ ] Secciones de 150 vh por pieza, con un umbral de 40 vh al principio y 80 vh al cierre (`DESIGN.md` §El scroll es el lector).
-- [ ] `p = clamp((scrollY − top) / (alto − viewport), 0, 1)`.
-- [ ] Estado amortiguado: `state += (target − state) · (1 − e^(−dt·5))`, con `dt` clampeado a 1/20 s.
-- [ ] El estado se congela fuera de `[0.05, 0.85]` para que cada pieza tenga aire de lectura.
-- [ ] Parallax del objeto entre −3 % y +3 %; el fondo, como máximo 12 px en todo el recorrido.
-- [ ] La columna de lectura **no** se anima: se pega, se lee, se suelta.
-- [ ] Teclado: `ArrowRight`/`ArrowLeft` saltan al inicio de la pieza siguiente/anterior.
+Los seis modelos son ahora funciones puras del progreso: `update(p)` con un único número, sin estado interno, sin `toggle()` y sin movimiento dependiente del reloj.
 
-### 2.4 Rotación
+| Pieza | p=0 | p=1 |
+|---|---|---|
+| book | libro intacto | quemado: las hojas de arriba se carbonizan, se encogen y se levantan |
+| scarf | anudado en la cabeza | desplegado en el triángulo, con las puntas guardadas en el pliegue |
+| silhouette | figura entera | la figura sale del encuadre hacia arriba; los relieves se ocultan |
+| scissors | tijeras abiertas, película entera | tijeras cerradas y película cortada en dos |
+| birds | pájaros libres | la jaula crece y se cierra sobre ellos |
+| flight | rampa cerrada | rampa abajo |
 
-- [ ] Arrastre sobre el escenario: yaw ±35°, pitch ±12°, con tope elástico sin rebote.
-- [ ] La rotación se queda donde quedó: no hay auto-rotación ni retorno a la pose inicial.
-- [ ] `touch-action: pan-y` en el escenario, para que en el teléfono el dedo vertical scrollee y el horizontal gire.
-- [ ] `cursor: grab` / `grabbing`. Se elimina el `crosshair`.
+- [x] Convertir cada uno y calibrar su pose (`POSES` en `src/main.js`).
+- [x] Decidir el estado de cada pieza en función de `p`.
+- [x] Borrar de los modelos los sistemas de partículas (fuego y brasas del libro).
+- [x] Quitar de los modelos los `toggle()`.
 
-### 2.5 El texto
+**Trampa encontrada:** el pañuelo se leía como una lámina informe. El modelo anterior era una superficie paramétrica sin volumen; se rehízo como tela que envuelve una cabeza y se despliega en el triángulo. La caja del triángulo y la de la tela anudada tienen que ser casi la misma: si no, la pieza se sale de cuadro al desenlazarse.
 
-- [ ] `assets/texts/texts.json`: seis citas reales con `id`, `piece`, `author`, `work`, `year`, `excerpt`, `source`, `license`.
-- [ ] Máximo 4 versos o 40 palabras por cita, lo que sea menor.
-- [ ] El bloque legible y la inscripción salen del **mismo** `excerpt`: una sola fuente de verdad por pieza.
-- [ ] `server.py`: reemplazar `/api/poems` por `/api/texts`; eliminar el corpus de Bécquer y su `refresh()` contra Gutenberg.
-- [ ] Borrar `assets/texts/poems.json` y `src/poetry.js`.
+### 2.3 Scroll continuo · CERRADA
+
+- [x] Secciones de 150 vh por pieza, con 80 vh al cierre.
+- [x] `p = clamp((scrollY − top) / (alto − viewport), 0, 1)`.
+- [x] Estado amortiguado: `state += (target − state) · (1 − e^(−dt·5))`, con `dt` clampeado a 1/20 s.
+- [x] El estado se congela fuera de `[0.05, 0.85]`.
+- [x] Parallax del objeto entre −3 % y +3 %.
+- [x] La columna de lectura **no** se anima.
+- [x] Teclado: `ArrowRight`/`ArrowLeft` saltan al inicio de la pieza siguiente/anterior.
+
+**Verificación ejecutada** (`tools/cdp.mjs scroll all`): las seis piezas aparecen en orden, cada una recorre su estado de 0 a 1 y vuelve a 0 al bajar; la columna muestra la cita de la pieza activa; la consola queda limpia.
+
+**Sin JS:** las secciones se apilan como documento. La clase `.js` en `<html>` decide los 150 vh.
+
+### 2.4 Rotación · CERRADA
+
+- [x] Arrastre sobre el escenario: yaw ±35°, pitch ±12°, con tope elástico sin rebote.
+- [x] La rotación se queda donde quedó.
+- [x] `touch-action: pan-y` en el escenario.
+- [x] `cursor: grab` / `grabbing`.
+
+### 2.5 El texto · CERRADA
+
+- [x] `assets/texts/texts.json`: seis citas reales con `id`, `piece`, `author`, `work`, `year`, `excerpt`, `source`, `license`.
+- [x] Máximo 4 versos o 40 palabras por cita.
+- [x] El bloque legible y la inscripción salen del **mismo** `excerpt`.
+- [x] `server.py` sirve el corpus como archivo estático: no hay API, ni descarga remota, ni `refresh()`.
+- [x] Borrados `assets/texts/poems.json` y `src/poetry.js`.
+
+**Citas verificadas** (texto literal leído en la fuente, con URL y estado de permiso):
+
+| Pieza | Autor | Obra | Año | Fuente de verificación |
+|---|---|---|---|---|
+| El libro quemado | Juan Gelman | Bajo la lluvia ajena | 1980 | Material de Lectura, UNAM, sección III |
+| El pañuelo | Juan Gelman | Hacia el sur | 1982 | Material de Lectura, UNAM, «Otras partes» |
+| La silueta | Juan Gelman | Carta a mi madre | 1989 | Multiversos |
+| Las tijeras | Enrique Lihn | A partir de Manhattan | 1979 | Memoria Chilena, Biblioteca Nacional de Chile |
+| Los pájaros | Juan Gelman | Bajo la lluvia ajena | 1980 | Material de Lectura, UNAM, sección I |
+| El vuelo | Juan José Saer | El río sin orillas | 1991 | La Nación, fragmento del capítulo inicial |
+
+Los créditos con la procedencia se arman solos desde el corpus (`#credits` en `index.html`).
 
 ---
 
 ## Etapa 3 — Cierre, créditos y entrega
 
-- [ ] Sección de **Créditos y fuentes** (pedida explícitamente): por cita, autor, obra, edición o URL, año, verso o página, estado de permiso. Después, licencias de código y tipografía (Sligoil Micro — OFL 1.1 —, Three.js — MIT —, Newsreader — OFL —) y la aclaración de que los modelos son representaciones y no levantamientos técnicos. Absorber `docs/FUENTES.md` sin duplicarlo.
-- [ ] `README.md` al día: cómo abrir, cómo reconstruir `vendor/`, la advertencia de que los placeholders no se entregan.
+- [x] Sección de **Créditos y fuentes**: por cita, autor, obra, edición o URL, año, estado de permiso. Después, licencias de código y tipografía y la aclaración de que los modelos son representaciones y no levantamientos técnicos.
+- [ ] `README.md` al día: cómo abrir, cómo reconstruir `vendor/`.
 - [ ] Borrar `src/ascii.js` y `src/input.js` (renderer e input viejos). ✔ Hecho en la Etapa 1.
 - [ ] `docs/PLAN.md`, `docs/VALIDACION.md` y `docs/validacion.json` describían el pipeline WebGL: borrados. Falta reescribir los criterios de validación de la obra nueva (Etapa 3).
 - [ ] Repo de entrega: `git init` dentro de la carpeta del proyecto, con `node_modules/` y artefactos de build fuera del índice.

@@ -5,19 +5,88 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0c10">
   <title>Artefactos de memoria</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0c10'/%3E%3Ctext x='8' y='12' font-family='monospace' font-size='11' fill='%23cfc7b8' text-anchor='middle'%3E%C2%B7%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
   <div id="stage" class="stage" aria-hidden="true"></div>
 
   <main class="column">
-    <section class="piece" aria-labelledby="t-book">
-      <h1 id="t-book" class="piece-title">El libro quemado</h1>
-      <blockquote class="citation">
-        <p id="quote"></p>
-        <footer id="attribution"></footer>
-      </blockquote>
-      <p class="notice">Fragmentos citados con fines de estudio. Procedencia completa en Créditos.</p>
+    <section class="piece" data-piece="book" aria-labelledby="t-book">
+      <div class="piece-inner">
+        <h1 id="t-book" class="piece-title">El libro quemado</h1>
+        <blockquote class="citation" cite="">
+          <p></p>
+          <footer></footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="piece" data-piece="scarf" aria-labelledby="t-scarf">
+      <div class="piece-inner">
+        <h2 id="t-scarf" class="piece-title">El pañuelo</h2>
+        <blockquote class="citation" cite="">
+          <p></p>
+          <footer></footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="piece" data-piece="silhouette" aria-labelledby="t-silhouette">
+      <div class="piece-inner">
+        <h2 id="t-silhouette" class="piece-title">La silueta</h2>
+        <blockquote class="citation" cite="">
+          <p></p>
+          <footer></footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="piece" data-piece="scissors" aria-labelledby="t-scissors">
+      <div class="piece-inner">
+        <h2 id="t-scissors" class="piece-title">Las tijeras</h2>
+        <blockquote class="citation" cite="">
+          <p></p>
+          <footer></footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="piece" data-piece="birds" aria-labelledby="t-birds">
+      <div class="piece-inner">
+        <h2 id="t-birds" class="piece-title">Los pájaros</h2>
+        <blockquote class="citation" cite="">
+          <p></p>
+          <footer></footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="piece" data-piece="flight" aria-labelledby="t-flight">
+      <div class="piece-inner">
+        <h2 id="t-flight" class="piece-title">El vuelo</h2>
+        <blockquote class="citation" cite="">
+          <p></p>
+          <footer></footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="closing" aria-labelledby="t-credits">
+      <div class="piece-inner">
+        <h2 id="t-credits" class="piece-title">Créditos y fuentes</h2>
+        <p class="notice">Fragmentos citados con fines de estudio. Procedencia completa en Créditos.</p>
+        <div id="credits" class="credits"></div>
+        <h3 class="piece-subtitle">Licencias</h3>
+        <ul class="credits-list">
+          <li>Three.js — MIT.</li>
+          <li>glyphcss — MIT.</li>
+          <li>Sligoil Micro (Ariel Martín Pérez / Velvetyne) — SIL OFL 1.1.</li>
+          <li>Newsreader — SIL OFL 1.1.</li>
+        </ul>
+        <p class="notice">Los seis artefactos son representaciones proceduales, no levantamientos técnicos de los objetos reales.</p>
+      </div>
     </section>
   </main>
 

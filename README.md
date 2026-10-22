@@ -25,10 +25,10 @@ Abrir http://localhost:8000 . No requiere npm para visualizar la obra: los bundl
 - `src/geometry.js`: conversor Three.js → `Polygon[]` de glyphcss, con color por cara.
 - `src/glyph-stage.js`: escena glyphcss, grilla, esculpido del texto, encuadre.
 - `src/models/`: los seis artefactos, procedurales.
-- `assets/texts/texts.json`: corpus de citas. `status: "placeholder"` = relleno de desarrollo.
+- `assets/texts/texts.json`: corpus de seis citas verificadas, con procedencia y permiso.
 - `assets/fonts/`: Sligoil Micro (trama ASCII, SIL OFL 1.1) y Newsreader (lectura, SIL OFL).
 - `vendor/`: Three.js, Motion y glyphcss empaquetados (ESM, minificados).
-- `tools/dump-silhouette.mjs`: vuelca la silueta ASCII a texto plano, para encuadrar las piezas.
+- `tools/`: herramientas de encuadre y verificación — volcar siluetas a texto, barrer poses, capturar la obra en imagen, medir el costo por cuadro.
 - `docs/`: plan técnico, fuentes, alcance y validación.
 
 ## Reconstruir los bundles
@@ -42,4 +42,4 @@ npm run build
 
 ## Estado
 
-Etapa 1 del plan: el pipeline de render funciona de punta a punta (geometría → glyphcss → texto esculpido) y la columna de lectura está montada. Falta la legibilidad de las siluetas y el recorrido con scroll: ver `PLAN.md`.
+Etapa 2 del plan: las seis piezas se leen como lo que son, el scroll recorre la obra y el estado de cada pieza lo sigue. El corpus tiene citas reales con procedencia. Ver `PLAN.md`.

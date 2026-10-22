@@ -3,15 +3,76 @@
   "notice": "Citas breves de poesía y literatura del período, con procedencia verificable. status=placeholder NO es material real: la obra no se entrega así. Cada cita necesita autor, obra, año y edición o URL consultada.",
   "texts": [
     {
-      "id": "placeholder-libro",
-      "status": "placeholder",
+      "id": "gelman-bajo-lluvia-ajena-iii",
+      "status": "verified",
       "piece": "book",
       "title": "El libro quemado",
-      "author": "—",
-      "work": "—",
-      "year": null,
-      "excerpt": "Texto provisorio. Este fragmento se esculpe sobre la silueta del libro y se lee en la columna. Se reemplaza por una cita verificada de poesía o literatura del período, con autor, obra, año y edición.",
-      "source": null
+      "author": "Juan Gelman",
+      "work": "Bajo la lluvia ajena (notas al pie de una derrota)",
+      "year": 1980,
+      "excerpt": "¿Acaso soy otra cosa? Vinieron dictaduras militares, gobiernos civiles y nuevas dictaduras militares, me quitaron los libros, el pan, el hijo, desesperaron a mi madre,",
+      "source": "Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Bajo la lluvia ajena (1980)», sección III. https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=4",
+      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+    },
+    {
+      "id": "gelman-hacia-el-sur-otras-partes",
+      "status": "verified",
+      "piece": "scarf",
+      "title": "El pañuelo",
+      "author": "Juan Gelman",
+      "work": "Hacia el sur",
+      "year": 1982,
+      "excerpt": "arrastran sus lágrimas con un pañuelito detrás como barriendo el sufrimiento\ncomo no queriendo mojarlo\npara que el sufrimiento estalle y arda y haga asiento donde sentarse a pensar otra vez",
+      "source": "Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Hacia el sur (1982)», «Otras partes». https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5",
+      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+    },
+    {
+      "id": "gelman-carta-a-mi-madre",
+      "status": "verified",
+      "piece": "silhouette",
+      "title": "La silueta",
+      "author": "Juan Gelman",
+      "work": "Carta a mi madre",
+      "year": 1989,
+      "excerpt": "no sé cómo es que mueras\n¿entraste tanto en tu desparecer?\n¿no podrías cesar en tu morir para decirme?\n¿y qué te habré morido al darme a luz?",
+      "source": "Multiversos (poesía argentina con texto completo): Juan Gelman, «Carta a mi madre» (1989). https://www.multiversos.com.ar/otros-poetas/carta-a-mi-madre-juan-gelman",
+      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+    },
+    {
+      "id": "lihn-nunca-sali",
+      "status": "verified",
+      "piece": "scissors",
+      "title": "Las tijeras",
+      "author": "Enrique Lihn",
+      "work": "A partir de Manhattan",
+      "year": 1979,
+      "excerpt": "Otras lenguas me inspiran un sagrado rencor\nel miedo de perder con la lengua materna\ntoda la realidad. Nunca salí de nada.",
+      "source": "Memoria Chilena, Biblioteca Nacional de Chile: Enrique Lihn, «Nunca salí del horroroso Chile», de A partir de Manhattan (Valparaíso, Ganymedes, 1979). https://www.memoriachilena.gob.cl/602/w3-article-3408.html",
+      "license": "Obra con derechos reservados (Enrique Lihn, 1929-1988). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+    },
+    {
+      "id": "gelman-bajo-lluvia-ajena-i",
+      "status": "verified",
+      "piece": "birds",
+      "title": "Los pájaros",
+      "author": "Juan Gelman",
+      "work": "Bajo la lluvia ajena (notas al pie de una derrota)",
+      "year": 1980,
+      "excerpt": "qué saben estos gringos de sus voces, sus pájaros, sus duelos, sus tormentas.",
+      "source": "Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Bajo la lluvia ajena (1980)», sección I. https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=4",
+      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+    },
+    {
+      "id": "saer-rio-sin-orillas",
+      "status": "verified",
+      "piece": "flight",
+      "title": "El vuelo",
+      "author": "Juan José Saer",
+      "work": "El río sin orillas (tratado imaginario)",
+      "year": 1991,
+      "excerpt": "Más todavía: aunque trate de sacudírmelo como a una carga demasiado pesada, en un desplante espectacular, o poco a poco y subrepticiamente, en cualquier esquina del mundo, incluso en la más imprevisible, me estará esperando.",
+      "source": "La Nación, fragmento del capítulo inicial de El río sin orillas (Buenos Aires, Seix Barral, 1991). https://www.lanacion.com.ar/cultura/el-rio-sin-orillas-nid2386024/",
+      "license": "Obra con derechos reservados (Juan José Saer, 1937-2005). Cita breve con fines de estudio; se acredita en los créditos de la obra."
     }
   ]
 }
