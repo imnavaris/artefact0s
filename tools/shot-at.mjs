@@ -17,7 +17,7 @@ const chrome = spawn(CHROME, [
   '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows',
   '--disable-renderer-backgrounding', '--hide-scrollbars',
   `--remote-debugging-port=${DEBUG_PORT}`,
-  '--user-data-dir=C:\\Users\\Usuario\\AppData\\Local\\Temp\\opencode\\cdp-profile-shotat',
+  `--user-data-dir=${process.env.TEMP}\cdp-profile-shotat-${process.pid}`,
   '--window-size=1440,900', 'about:blank',
 ], { stdio: ['ignore', 'ignore', 'ignore'] });
 process.on('exit', () => chrome.kill());
