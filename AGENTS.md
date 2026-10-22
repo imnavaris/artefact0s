@@ -46,7 +46,7 @@ assets/texts/         corpus de citas (fuente de verdad del texto)
 assets/fonts/         Sligoil Micro (trama ASCII), Newsreader (lectura)
 vendor/               bundles commiteados: three, motion, glyphcss
 tools/                encuadre y verificación: siluetas, poses, capturas, costo
-docs/                 plan técnico, fuentes, validación
+docs/VALIDACION.md    criterios de cierre de la obra y cómo se miden
 ```
 
 ## Reglas duras
@@ -72,6 +72,9 @@ No romperlas. Cada una tiene una razón y una trampa:
 - **El sombreado suave no vale lo que cuesta**: `smoothShading: true` multiplica por siete el costo del raster (52,8 ms contra 9,5) y solo cambia el 0,07 % de los píxeles. Va en `false`.
 - **Sin JavaScript el texto tiene que estar en el DOM**: por eso `server.py` inyecta el corpus en `index.html`. El JS solo completa lo que falta.
 - **`rAF` no corre en headless con `--dump-dom`**: para verificar de verdad, usar el CDP de `tools/cdp.mjs`, que sí ejecuta la página con cuadros reales.
+- **El perfil de Chromium es persistente**: `tools/cdp.mjs` deja la caché activada, y el navegador puede servir un módulo viejo del disco. La herramienta desactiva la caché por CDP; si se agrega otra, hacer lo mismo.
+- **La pieza activa es la última que pasó por el centro**: el cierre (que no es una pieza) no puede dejar al escenario en la primera pieza. Con la regla de "la sección que contiene el centro", el colofón se leía sobre el libro.
+- **Las fuentes viven en la obra**: la sección de créditos del documento es el único lugar donde están las referencias. `docs/FUENTES.md` se absorbió ahí y se borró; no volver a duplicarlas en un documento aparte.
 
 
 ## Comandos

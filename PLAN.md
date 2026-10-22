@@ -2,7 +2,7 @@
 
 Plan de ejecución para llevar el proyecto a su estado final. Por etapas, con verificación entre etapas: **ninguna etapa se da por cerrada sin evidencia ejecutada**.
 
-Estado: Etapa 0 y Etapa 1 cerradas. Etapa 2 en curso: 2.1 y 2.2 hechas, 2.3 y 2.4 hechas, 2.5 con el corpus verificado.
+Estado: Etapas 0, 1, 2 y 3 cerradas. La obra se entrega con sus créditos, sus criterios de validación y su registro en el vault.
 
 El diseño y la interacción ya están decididos y documentados en `DESIGN.md`; este documento no los re-discute, los ejecuta. Las reglas del repo están en `AGENTS.md`.
 
@@ -173,29 +173,36 @@ Los créditos con la procedencia se arman solos desde el corpus (`#credits` en `
 
 ---
 
-## Etapa 3 — Cierre, créditos y entrega
+## Etapa 3 — Cierre, créditos y entrega · CERRADA
 
-- [x] Sección de **Créditos y fuentes**: por cita, autor, obra, edición o URL, año, estado de permiso. Después, licencias de código y tipografía y la aclaración de que los modelos son representaciones y no levantamientos técnicos.
-- [ ] `README.md` al día: cómo abrir, cómo reconstruir `vendor/`.
-- [ ] Borrar `src/ascii.js` y `src/input.js` (renderer e input viejos). ✔ Hecho en la Etapa 1.
-- [ ] `docs/PLAN.md`, `docs/VALIDACION.md` y `docs/validacion.json` describían el pipeline WebGL: borrados. Falta reescribir los criterios de validación de la obra nueva (Etapa 3).
-- [ ] Repo de entrega: `git init` dentro de la carpeta del proyecto, con `node_modules/` y artefactos de build fuera del índice.
-- [ ] Registro en el vault: entrada en `01 - Proyectos/INDEX.md` y commit en el repo del vault.
+- [x] Sección de **Créditos y fuentes**: por cita, autor, obra, edición o URL, año, estado de permiso. Después, licencias de código y tipografía, el contexto histórico consultado y la aclaración de que los modelos son representaciones y no levantamientos técnicos. El colofón es la última sección del scroll (80 vh), no una página aparte: el recorrido no se alarga.
+- [x] `docs/FUENTES.md` absorbido en los créditos y borrado. Las fuentes viven en la obra, una sola vez.
+- [x] `README.md` al día: cómo abrir, cómo reconstruir `vendor/`, dónde están las fuentes.
+- [x] `src/ascii.js` y `src/input.js` (renderer e input viejos): borrados en la Etapa 1.
+- [x] `docs/PLAN.md`, `docs/VALIDACION.md` y `docs/validacion.json` describían el pipeline WebGL: borrados. Los criterios de la obra nueva están en `docs/VALIDACION.md`, con la evidencia de cada uno. `validacion.json` no se rehace: nadie lo lee.
+- [x] Repo de entrega: `git init` dentro de la carpeta del proyecto, con `node_modules/` y `__pycache__/` fuera del índice.
+- [x] Registro en el vault: entrada en `01 - Proyectos/INDEX.md` y commit en el repo del vault.
+
+**Arreglo de la entrega:** al final del recorrido, el colofón se leía sobre el libro. La pieza activa era "la sección que contiene el centro de la ventana", y el cierre no es una sección: al llegar al final, ninguna lo contenía y el escenario volvía a la primera pieza. Ahora la pieza activa es la última que ya pasó por el centro, así que el cierre queda sobre El vuelo.
+
+**Trampa nueva:** el perfil de Chromium de `tools/cdp.mjs` es persistente, así que la verificación podía medir un módulo viejo del cache en vez del archivo del disco. La herramienta desactiva la caché por CDP.
 
 ### Accesibilidad (checklist de cierre)
 
-- [ ] Todo el texto existe en el DOM desde el primer render; `Ctrl+F` y el lector de pantalla funcionan sin JS.
-- [ ] La capa ASCII lleva `aria-hidden="true"`.
-- [ ] Sin JS, las secciones se apilan como documento.
-- [ ] Foco visible: `outline: 2px solid #d99b26; outline-offset: 3px`. Ningún `outline: none`.
-- [ ] `prefers-reduced-motion`: `p` crudo sin amortiguación, parallax en cero, arrastre sin inercia, estados en 4 escalones, `--glow` fijo.
+- [x] Todo el texto existe en el DOM desde el primer render; `Ctrl+F` y el lector de pantalla funcionan sin JS.
+- [x] La capa ASCII lleva `aria-hidden="true"`.
+- [x] Sin JS, las secciones se apilan como documento.
+- [x] Foco visible: `outline: 2px solid #d99b26; outline-offset: 3px`. Ningún `outline: none`.
+- [x] `prefers-reduced-motion`: `p` crudo sin amortiguación, parallax en cero, arrastre sin inercia, estados en 4 escalones, `--glow` fijo.
+
+Evidencia y límites en `docs/VALIDACION.md`. Lo que no se verificó: la obra en un teléfono real (sólo viewport simulado) y la lectura con lector de pantalla (sólo DOM y `aria-hidden`).
 
 ### Rendimiento
 
-- [ ] Un solo nodo de texto para la capa esculpida; actualizar con `nodeValue`, nunca reemplazando spans.
-- [ ] `--glow` se actualiza **sólo** en los umbrales de estado, no por frame.
-- [ ] El estado se recalcula sólo si cambió `p` o hubo arrastre.
-- [ ] Por encima de ~25.000 glifos, celda de 8 × 12 px en vez de 6 × 10.
+- [x] Un solo nodo de texto para la capa esculpida: la librería escribe en un único `<pre>`, sin spans por celda.
+- [x] `--glow` se actualiza **sólo** en los umbrales de estado, no por frame.
+- [x] El estado se recalcula sólo si cambió `p` o hubo arrastre.
+- [x] Por encima de ~25.000 glifos, celda de 8 × 12 px en vez de 6 × 10. No aplica con la grilla actual: 2.957 glifos (133 × 74). Queda como regla si la obra crece.
 
 ---
 

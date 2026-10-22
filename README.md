@@ -29,7 +29,9 @@ Abrir http://localhost:8000 . No requiere npm para visualizar la obra: los bundl
 - `assets/fonts/`: Sligoil Micro (trama ASCII, SIL OFL 1.1) y Newsreader (lectura, SIL OFL).
 - `vendor/`: Three.js, Motion y glyphcss empaquetados (ESM, minificados).
 - `tools/`: herramientas de encuadre y verificación — volcar siluetas a texto, barrer poses, capturar la obra en imagen, medir el costo por cuadro.
-- `docs/`: plan técnico, fuentes, alcance y validación.
+- `docs/VALIDACION.md`: los criterios de cierre de la obra y la forma de medirlos.
+
+Las fuentes están dentro de la obra: la sección final **Créditos y fuentes** lleva, por cita, autor, obra, año, edición o URL y estado de permiso; después, licencias de código y tipografía, el contexto histórico consultado y la aclaración de que los modelos son representaciones y no levantamientos técnicos.
 
 ## Reconstruir los bundles
 
@@ -42,4 +44,4 @@ npm run build
 
 ## Estado
 
-Etapa 2 del plan: las seis piezas se leen como lo que son, el scroll recorre la obra y el estado de cada pieza lo sigue. El corpus tiene citas reales con procedencia. Ver `PLAN.md`.
+Etapa 3 del plan, cerrada: las seis piezas se leen como lo que son, el scroll recorre la obra y el estado de cada pieza lo sigue, el corpus tiene citas reales con procedencia, y el cierre lleva créditos, licencias y contexto histórico. `PLAN.md` tiene el estado real y `docs/VALIDACION.md` los criterios con su evidencia.
