@@ -95,6 +95,7 @@ python server.py               # sirve en :8000
 - La obra se recorre entera: `node tools/cdp.mjs scroll all` (las seis piezas, cada una de 0 a 1, consola limpia).
 - Sin JavaScript: `node tools/verify-nojs.mjs` (seis piezas apiladas, texto completo en el DOM).
 - El costo por cuadro: `node tools/perf.mjs` (fps en scroll continuo y peor cuadro).
+- Los criterios de `docs/VALIDACION.md` están ejecutados y con su evidencia.
 
 ## Herramientas
 
