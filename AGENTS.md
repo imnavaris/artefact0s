@@ -37,6 +37,7 @@ index.html            documento, importmap (three / motion / glyphcss)
 style.css             sistema visual completo (tokens, tipografía, glow, layout)
 DESIGN.md             decisiones de diseño e interacción. Manda sobre style.css
 PLAN.md               plan de ejecución por etapas
+HANDOFF.md            estado real, evidencia y pendientes: por dónde se reanuda
 AGENTS.md             este archivo
 src/main.js           bootstrap: fuente, corpus, seis piezas, scroll, arrastre
 src/geometry.js       conversor Three.js → Polygon[]
