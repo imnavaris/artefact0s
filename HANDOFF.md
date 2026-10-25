@@ -1,6 +1,6 @@
 # HANDOFF — Artefactos de memoria
 
-Punto de reanudación. Última sesión: 22/10/2026.
+Punto de reanudación. Última sesión de trabajo: 22/10/2026. Handoff escrito: 24/10/2026.
 
 ## Estado
 
