@@ -1,3 +1,5 @@
+@property --glow { syntax: '<number>'; inherits: true; initial-value: 0.72; }
+
 @font-face{font-family:'Sligoil Micro';src:url('assets/fonts/Sligoil-Micro.woff2') format('woff2');font-display:swap}
 @font-face{font-family:'Newsreader';src:url('assets/fonts/Newsreader.woff2') format('woff2');font-weight:200 800;font-display:swap}
 
@@ -9,7 +11,7 @@
   --ash:#6b655c;
   --accent:#d99b26;
   --hairline:#2e3342;
-  --glow:1;
+  --glow:0.72;
   --cell-w:8px;
   --cell-h:14px;
   --ease:cubic-bezier(0.23,1,0.32,1);
@@ -18,6 +20,14 @@
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
 body{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:20px;line-height:32px;font-weight:400}
+
+.skip-link{
+  position:fixed;top:16px;left:16px;z-index:100;
+  padding:8px 14px;background:var(--bg);color:var(--paper);
+  border:1px solid var(--accent);font-size:15px;line-height:20px;
+  text-decoration:none;transform:translateY(-150%);
+}
+.skip-link:focus-visible{transform:translateY(0)}
 
 /* Escenario ASCII: fijo, a la izquierda. */
 .stage{
@@ -30,10 +40,6 @@ body{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:20px;lin
   background:radial-gradient(1100px 760px at 46% 44%,rgba(217,155,38,.045),rgba(11,12,16,0) 68%);
 }
 .glyph-scene{position:relative}
-/* Especificidad 0,3,0 a proposito: la libreria inyecta
-   `.glyph-scene .glyph-output { font-size: inherit; font-family: monospace }`
-   con 0,2,0, y al venir despues en el head gana. Con una clase mas, la trama
-   sale a la tamano de celda y no a los 20 px del cuerpo de lectura. */
 .stage .glyph-scene .glyph-output{
   margin:0;
   font-family:'Sligoil Micro',ui-monospace,'Cascadia Mono',Consolas,monospace;
@@ -46,8 +52,12 @@ body{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:20px;lin
     0 0 7px rgba(217,155,38,calc(.16 * var(--glow))),
     0 0 16px rgba(217,155,38,calc(.07 * var(--glow)));}
 
-/* Columna de lectura. Cada pieza mide 150vh: el bloque se pega, se lee y se suelta.
-   Sin JS las secciones se apilan como documento. */
+.threshold{position:relative;max-width:560px;margin:0 auto;padding:48px 0;border-bottom:1px solid var(--hairline)}
+.js .threshold{min-height:42vh;display:flex;align-items:center}
+.threshold-kicker{font-family:'Sligoil Micro',ui-monospace,monospace;font-size:12px;line-height:18px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);margin:0 0 12px}
+.work-title{font-size:40px;line-height:48px;font-weight:400;letter-spacing:-.01em;color:var(--ink);margin:0 0 16px}
+.threshold-lead{font-size:17px;line-height:26px;color:var(--ink-2);margin:0;max-width:54ch}
+
 .column{position:relative;margin-left:55%;width:45%;padding:0 48px}
 .piece{position:relative;max-width:560px;margin:0 auto}
 .js .piece{height:150vh}
@@ -62,34 +72,38 @@ body{font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:20px;lin
 .citation footer{color:var(--ink-2);font-size:16px;line-height:24px}
 .citation footer::before{content:"";display:inline-block;width:24px;height:1px;background:var(--accent);vertical-align:middle;margin-right:8px}
 .notice{color:var(--ink-2);font-size:16px;line-height:24px;margin:24px 0 0}
-.piece-subtitle{font-size:20px;line-height:28px;font-weight:400;margin:40px 0 16px}
-.credits-list{margin:0;padding:0;list-style:none;color:var(--ink-2);font-size:16px;line-height:24px}
-.credits-list li{margin:0 0 8px}
 .credits{margin:24px 0 0}
 .credits-item{margin:0 0 24px;padding:0 0 24px;border-bottom:1px solid var(--hairline)}
 .credits-item:last-child{border-bottom:0;padding-bottom:0}
 .credits-cite{font-size:17px;line-height:28px;margin:0 0 8px;white-space:pre-line}
-.credits-meta{color:var(--ink-2);font-size:15px;line-height:24px;margin:0}
+.credits-meta{color:var(--ink-2);font-size:15px;line-height:24px;margin:0;overflow-wrap:anywhere;word-break:break-word}
+.copyright-notice{color:var(--ink-2);font-size:15px;line-height:24px;margin:24px 0 0;padding-top:16px;border-top:1px solid var(--hairline)}
 
 a{color:var(--accent);text-underline-offset:3px}
 
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 @media (max-width:1100px){
-  .stage{inset:0 0 auto 0;height:46vh;align-items:flex-start;padding-top:24px}
-  .column{margin-left:0;width:100%;padding:0 32px}
-  .piece-inner{padding:32px 0}
+  .stage{
+    inset:0 0 auto 0;height:44vh;align-items:center;padding-top:0;
+    background:var(--bg);z-index:10;border-bottom:1px solid var(--hairline);
+  }
+  .column{margin-left:0;margin-top:44vh;width:100%;padding:0 32px}
+  .js .threshold{min-height:32vh}
+  .piece-inner{top:calc(44vh + 16px);padding:28px 0;background:var(--bg)}
 }
 @media (max-width:720px){
-  .stage{height:42vh}
-  .column{padding:0 24px}
+  :root{--cell-w:6px;--cell-h:10px}
+  .stage{height:40vh;overflow:hidden}
+  .column{margin-top:40vh;padding:0 24px}
+  .piece-inner{top:calc(40vh + 12px);padding:24px 0}
+  .work-title{font-size:32px;line-height:38px}
   .piece-title{font-size:28px;line-height:36px}
   .citation p{font-size:18px;line-height:28px;max-width:none}
 }
 
-/* Movimiento reducido: sin parallax, sin amortiguacion, glow fijo. */
 @media (prefers-reduced-motion:reduce){
-  :root{--glow:1}
+  :root{--glow:0.72}
   .glyph-scene{transform:none !important}
   .citation p,.piece-inner{transition:none !important}
 }

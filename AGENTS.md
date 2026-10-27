@@ -1,4 +1,4 @@
-# AGENTS.md — Artefactos de memoria
+# AGENTS.md: Artefactos de memoria
 
 Reglas de trabajo del repo. Autoridad: `usuario-en-sesión` > este archivo > `DESIGN.md` (decisiones visuales ya tomadas) > `PLAN.md` (orden de ejecución) > `SKILL.md`.
 
@@ -8,7 +8,7 @@ El vault tiene su propio `AGENTS.md`; este archivo sólo aplica a la carpeta del
 
 Seis objetos (El libro quemado, El Pañuelo, La Silueta, Las Tijeras, Los Pájaros, El Vuelo) sobre la dictadura argentina, renderizados como arte ASCII. **La interactividad está en el texto, no en el modelo.** Es un dispositivo de lectura, no un juego: no hay clic, no hay recompensas, no hay partículas.
 
-El texto que se lee es material real: seis citas de poesía y literatura del período, con procedencia y permiso anotados en `assets/texts/texts.json`. Ese archivo es la **única fuente de verdad**: `server.py` lo inyecta en el documento para que el texto exista aunque no haya JavaScript. Un texto con `status: "placeholder"` es relleno de desarrollo: **la obra no se entrega con ellos**.
+El texto que se lee es material real: seis citas de poesía, literatura y documentos históricos del período, con procedencia y permiso anotados en `assets/texts/texts.json`. Ese archivo es la **única fuente de verdad**: `server.py` lo inyecta en el documento (`python server.py --bake` persiste el HTML estático en disco) para que el texto exista aunque no haya JavaScript ni servidor activo.
 
 ## Cómo se abre
 
@@ -24,28 +24,28 @@ No requiere npm para visualizar: `vendor/` está commiteado. npm sólo hace falt
 | Capa | Qué | Dónde |
 |---|---|---|
 | Geometría | Three.js como **biblioteca de geometría únicamente**. No hay renderer WebGL. | `vendor/three.js` |
-| Raster | glyphcss: `Polygon[]` → texto en un `<pre>` del DOM | `vendor/glyphcss.js` |
-| Puente | Three.js `BufferGeometry` → `Polygon[]` con color por cara | `src/geometry.js` |
-| Escena | Escena glyphcss + esculpido del texto sobre la grilla | `src/glyph-stage.js` |
+| Raster | glyphcss: `Polygon[]` -> texto en un `<pre>` del DOM | `vendor/glyphcss.js` |
+| Puente | Three.js `BufferGeometry` -> `Polygon[]` con color por cara monocromo papel | `src/geometry.js` |
+| Escena | Escena glyphcss + esculpido continuo del texto sobre la grilla (`fitMultiState`) | `src/glyph-stage.js` |
 | Modelos | Los seis artefactos, procedurales. Cada uno es `update(p)`: una función pura del progreso. | `src/models/*.js` |
-| Servidor | Python stdlib: estático, e inyecta el corpus en el documento | `server.py` |
+| Servidor | Python stdlib: estático, inyecta con escape HTML el corpus en el documento y soporta `--bake` | `server.py` |
 
 ## Mapa de archivos
 
 ```
-index.html            documento, importmap (three / motion / glyphcss)
-style.css             sistema visual completo (tokens, tipografía, glow, layout)
+index.html            documento con umbral, citas pre-horneadas e importmap (three / glyphcss)
+style.css             sistema visual completo (tokens, @property --glow, tipografía, layout mobile)
 DESIGN.md             decisiones de diseño e interacción. Manda sobre style.css
 PLAN.md               plan de ejecución por etapas
 HANDOFF.md            estado real, evidencia y pendientes: por dónde se reanuda
 AGENTS.md             este archivo
-src/main.js           bootstrap: fuente, corpus, seis piezas, scroll, arrastre
-src/geometry.js       conversor Three.js → Polygon[]
-src/glyph-stage.js    escena glyphcss, grilla, esculpido, encuadre
-src/models/*.js       los seis artefactos
-assets/texts/         corpus de citas (fuente de verdad del texto)
+src/main.js           bootstrap: fuente, corpus, seis piezas, scroll, teclado, arrastre
+src/geometry.js       conversor Three.js -> Polygon[] con clampPaperColor WCAG AA
+src/glyph-stage.js    escena glyphcss, grilla, esculpido continuo, encuadre multi-estado
+src/models/*.js       los seis artefactos monocromo
+assets/texts/         corpus de citas verificadas (fuente de verdad del texto)
 assets/fonts/         Sligoil Micro (trama ASCII), Newsreader (lectura)
-vendor/               bundles commiteados: three, motion, glyphcss
+vendor/               bundles commiteados: three, glyphcss
 tools/                encuadre y verificación: siluetas, poses, capturas, costo
 docs/VALIDACION.md    criterios de cierre de la obra y cómo se miden
 LICENSE.md            licencias de código, tipografía y textos de la obra
@@ -87,7 +87,8 @@ No romperlas. Cada una tiene una razón y una trampa:
 ## Comandos
 
 ```sh
-npm install && npm run build   # re-bundlea vendor/ (three, motion, glyphcss)
+npm install && npm run build   # re-bundlea vendor/ (three, glyphcss)
+python server.py --bake        # hornea las citas y créditos en index.html
 python server.py               # sirve en :8000
 ```
 

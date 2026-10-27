@@ -3,78 +3,73 @@ import {T,mat,texMat,part,shape,tube} from './shared.js';
 export function createBirds(){
   const root=new T.Group();
 
-  // Vibrant multi-colored plumage palettes for the flock
-  const bodyPalettes=[
-   texMat((c,w,h)=>{const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#ffd166');g.addColorStop(.55,'#f4a261');g.addColorStop(1,'#e76f51');c.fillStyle=g;c.fillRect(0,0,w,h);},{roughness:.48}),
-   texMat((c,w,h)=>{const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#90e0ef');g.addColorStop(.5,'#48bfe3');g.addColorStop(1,'#3a86ff');c.fillStyle=g;c.fillRect(0,0,w,h);},{roughness:.48}),
-   texMat((c,w,h)=>{const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#f7ede2');g.addColorStop(.5,'#f28482');g.addColorStop(1,'#d94e4e');c.fillStyle=g;c.fillRect(0,0,w,h);},{roughness:.48})
-  ];
+  const bodyMat=texMat((c,w,h)=>{
+   const g=c.createLinearGradient(0,0,w,h);
+   g.addColorStop(0,'#dfd8c8');
+   g.addColorStop(.6,'#c4bcac');
+   g.addColorStop(1,'#9e9688');
+   c.fillStyle=g;c.fillRect(0,0,w,h);
+  },{roughness:.5});
 
-  const wingPalettes=[
-   texMat((c,w,h)=>{const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#48bfe3');g.addColorStop(.6,'#72efdd');g.addColorStop(1,'#f4a261');c.fillStyle=g;c.fillRect(0,0,w,h);},{roughness:.45}),
-   texMat((c,w,h)=>{const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#f4a261');g.addColorStop(.6,'#ffd166');g.addColorStop(1,'#4cc9f0');c.fillStyle=g;c.fillRect(0,0,w,h);},{roughness:.45}),
-   texMat((c,w,h)=>{const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#ff758f');g.addColorStop(.6,'#ffb3c1');g.addColorStop(1,'#ffd166');c.fillStyle=g;c.fillRect(0,0,w,h);},{roughness:.45})
-  ];
+  const wingMat=texMat((c,w,h)=>{
+   const g=c.createLinearGradient(0,0,w,h);
+   g.addColorStop(0,'#ebe4d6');
+   g.addColorStop(.6,'#d4ccb8');
+   g.addColorStop(1,'#b8b0a0');
+   c.fillStyle=g;c.fillRect(0,0,w,h);
+  },{roughness:.45});
 
-  const beakMat=mat('#ff9f1c',{roughness:.35,metalness:.2});
-  const cageBarMat=mat('#529e88',{roughness:.42,metalness:.55}); // Oxidized verdigris copper
-  const cageRingMat=mat('#e0a646',{roughness:.32,metalness:.72}); // Antique golden brass
+  const beakMat=mat('#c8c0b0',{roughness:.4,metalness:.2});
+  const cageBarMat=mat('#9a9284',{roughness:.45,metalness:.4});
+  const cageRingMat=mat('#b8b0a0',{roughness:.35,metalness:.5});
 
   const birds=[];
 
   for(let i=0;i<15;i++){
    const b=new T.Group();
    root.add(b);
-   const bMat=bodyPalettes[i%3];
-   const wMat=wingPalettes[i%3];
 
-   // Sculpted bird torso, head, beak, and fanned tail
-   const body=part(b,new T.SphereGeometry(.115,14,10),bMat);
+   const body=part(b,new T.SphereGeometry(.115,7,5),bodyMat);
    body.scale.set(1.05,.95,2.15);
-   part(b,new T.SphereGeometry(.082,12,10),bMat,[0,.055,.19]);
-   part(b,new T.ConeGeometry(.048,.16,8),beakMat,[0,.05,.31],[Math.PI/2,0,0]);
-   shape(b,[[-.04,0],[.04,0],[.14,-.24],[-.14,-.24]],.022,wMat).rotation.x=Math.PI*.48;
+   part(b,new T.SphereGeometry(.082,6,5),bodyMat,[0,.055,.19]);
+   part(b,new T.ConeGeometry(.048,.16,4),beakMat,[0,.05,.31],[Math.PI/2,0,0]);
+   shape(b,[[-.04,0],[.04,0],[.17,-.28],[-.17,-.28]],.022,wingMat).rotation.x=Math.PI*.48;
 
    const wings=[];
    for(const s of [-1,1]){
     const pivot=new T.Group();
     b.add(pivot);
-    shape(pivot,[[0,0],[s*.48,.20],[s*.72,.09],[s*.46,-.07],[s*.15,-.10]],.024,wMat);
+    shape(pivot,[[0,0],[s*.58,.24],[s*.86,.11],[s*.55,-.08],[s*.18,-.12]],.024,wingMat);
     wings.push({s,pivot});
    }
    birds.push({b,wings});
   }
 
-  // Architectural domed cage with 10 spaced bars so birds inside remain clearly visible
   const cage=new T.Group();
   root.add(cage);
-  const nBars=10;
+  const nBars=8;
   for(let i=0;i<nBars;i++){
    const a=i/nBars*Math.PI*2,x=Math.cos(a),z=Math.sin(a);
-   tube(cage,[[x*1.62,-1.42,z*1.62],[x*1.62,.62,z*1.62],[x*.78,1.62,z*.78],[0,1.92,0]],.026,cageBarMat);
+   tube(cage,[[x*1.62,-1.42,z*1.62],[x*1.62,.62,z*1.62],[x*.78,1.62,z*.78],[0,1.92,0]],.034,cageBarMat,12,5);
   }
   for(const y of [-1.42,-.4,.62]){
-   part(cage,new T.TorusGeometry(1.62,.042,10,96),cageRingMat,[0,y,0],[Math.PI/2,0,0]);
+   part(cage,new T.TorusGeometry(1.62,.046,6,28),cageRingMat,[0,y,0],[Math.PI/2,0,0]);
   }
-  part(cage,new T.TorusGeometry(.18,.032,10,36),cageRingMat,[0,2.06,0]);
+  part(cage,new T.TorusGeometry(.18,.036,5,14),cageRingMat,[0,2.06,0]);
 
   return {
    root,
    kind:'birds',
-   // p=0: pájaros libres. p=1: la jaula se cierra sobre ellos.
    update(p){
-    // La jaula crece entre p=.08 y p=.28: aparece sin popping.
     const cageGrow=Math.min(1,Math.max(0,(p-.08)/.20));
     cage.scale.setScalar(.001+.999*Math.pow(cageGrow,.6));
 
     birds.forEach(({b,wings},i)=>{
-     // Posiciones deterministas: el pajaro no depende del reloj.
      const a=i*2.39996323;
      const r=(1.55+Math.sin(i*1.7)*.38)*(1-p*.36);
      const y=Math.sin(i*2.1)*.95*(1-p*.22);
      b.position.set(Math.cos(a)*r,y,Math.sin(a)*(.88-p*.18));
      b.rotation.y=-a;
-     // El aleteo sale de p: al cerrar la jaula el vuelo se agita.
      const beat=Math.sin(p*38+i)*.58*(1-p*.5);
      wings.forEach(({s,pivot})=>{
       pivot.rotation.z=s*beat;

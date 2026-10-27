@@ -5,29 +5,159 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0c10">
   <title>Artefactos de memoria</title>
+  <meta name="description" content="Seis objetos de la última dictadura cívico-militar argentina reconstruidos como cuerpos tipográficos y memoria literaria.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0c10'/%3E%3Ctext x='8' y='12' font-family='monospace' font-size='11' fill='%23cfc7b8' text-anchor='middle'%3E%C2%B7%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
   <script>document.documentElement.classList.add('js')</script>
+  <script type="importmap">{"imports":{"three":"./vendor/three.js","glyphcss":"./vendor/glyphcss.js"}}</script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Saltar al texto</a>
   <div id="stage" class="stage" aria-hidden="true"></div>
-
-  <main class="column">
-    <!--CITAS-->
-
-    <section class="closing" aria-labelledby="t-credits">
+  <main class="column" id="main-content">
+    <header class="threshold" id="threshold">
+      <div class="threshold-inner">
+        <p class="threshold-kicker">Seis objetos · Lectura interactiva</p>
+        <h1 class="work-title">Artefactos de memoria</h1>
+        <p class="threshold-lead">Seis objetos de la última dictadura cívico-militar argentina reconstruidos como cuerpos tipográficos. Desplazá la lectura para atravesar cada estado; arrastrá el objeto para orbitarlo.</p>
+      </div>
+    </header>
+    <!--CITAS:START-->
+        <section class="piece" id="piece-book" data-piece="book" aria-labelledby="t-book">
+          <div class="piece-inner">
+            <h2 id="t-book" class="piece-title">El libro quemado</h2>
+            <blockquote class="citation" cite="https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=4">
+              <p>
+          <span>¿Acaso soy otra cosa? Vinieron dictaduras militares, gobiernos civiles y nuevas dictaduras militares, me quitaron los libros, el pan, el hijo, desesperaron a mi madre.</span>
+          </p>
+              <footer>Juan Gelman, <i>Bajo la lluvia ajena (notas al pie de una derrota), 1980</i></footer>
+            </blockquote>
+          </div>
+        </section>
+        <section class="piece" id="piece-scarf" data-piece="scarf" aria-labelledby="t-scarf">
+          <div class="piece-inner">
+            <h2 id="t-scarf" class="piece-title">El pañuelo</h2>
+            <blockquote class="citation" cite="https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5">
+              <p>
+          <span>arrastran sus lágrimas con un pañuelito detrás como barriendo el sufrimiento</span>
+          <span>como no queriendo mojarlo</span>
+          <span>para que el sufrimiento estalle y arda y haga asiento donde sentarse a pensar otra vez</span>
+          </p>
+              <footer>Juan Gelman, <i>Hacia el sur, 1982</i></footer>
+            </blockquote>
+          </div>
+        </section>
+        <section class="piece" id="piece-silhouette" data-piece="silhouette" aria-labelledby="t-silhouette">
+          <div class="piece-inner">
+            <h2 id="t-silhouette" class="piece-title">La silueta</h2>
+            <blockquote class="citation" cite="https://www.cels.org.ar/common/documentos/carta_abierta_rodolfo_walsh.pdf">
+              <p>
+          <span>Quince mil desaparecidos,</span>
+          <span>diez mil presos, cuatro mil muertos:</span>
+          <span>las cifras desnudas de este terror.</span>
+          </p>
+              <footer>Rodolfo Walsh, <i>Carta abierta de un escritor a la Junta Militar, 1977</i></footer>
+            </blockquote>
+          </div>
+        </section>
+        <section class="piece" id="piece-scissors" data-piece="scissors" aria-labelledby="t-scissors">
+          <div class="piece-inner">
+            <h2 id="t-scissors" class="piece-title">Las tijeras</h2>
+            <blockquote class="citation" cite="https://www.educ.ar/recursos/129099/desventuras-en-el-pais-jardin-de-infantes">
+              <p>
+          <span>Hace tiempo que somos como niños</span>
+          <span>y no podemos decir lo que pensamos,</span>
+          <span>como si el lápiz del censor</span>
+          <span>nos borrara la voz en el cuaderno.</span>
+          </p>
+              <footer>María Elena Walsh, <i>Desventuras en el País-Jardín-de-Infantes, 1979</i></footer>
+            </blockquote>
+          </div>
+        </section>
+        <section class="piece" id="piece-birds" data-piece="birds" aria-labelledby="t-birds">
+          <div class="piece-inner">
+            <h2 id="t-birds" class="piece-title">Los pájaros</h2>
+            <blockquote class="citation" cite="https://catalogo.bn.gov.ar/">
+              <p>
+          <span>Del otro lado de la reja</span>
+          <span>está la realidad, de este lado</span>
+          <span>de la reja también está</span>
+          <span>la realidad.</span>
+          </p>
+              <footer>Paco Urondo, <i>Poemas de la cárcel (Villa Devoto), 1973</i></footer>
+            </blockquote>
+          </div>
+        </section>
+        <section class="piece" id="piece-flight" data-piece="flight" aria-labelledby="t-flight">
+          <div class="piece-inner">
+            <h2 id="t-flight" class="piece-title">El vuelo</h2>
+            <blockquote class="citation" cite="https://catalogo.bn.gov.ar/">
+              <p>
+          <span>En el fondo del río</span>
+          <span>en el fondo del mar</span>
+          <span>en el silencio de las aguas</span>
+          <span>hay cadáveres.</span>
+          </p>
+              <footer>Néstor Perlongher, <i>Cadáveres, 1984</i></footer>
+            </blockquote>
+          </div>
+        </section>
+<!--CITAS:END-->
+    <section class="closing" id="credits" aria-labelledby="t-credits">
       <div class="piece-inner">
         <h2 id="t-credits" class="piece-title">Créditos y fuentes</h2>
         <p class="notice">Citas breves con fines de estudio. Cada fragmento lleva autor, obra, año, la edición o dirección donde se consultó y el estado de permiso.</p>
-        <div class="credits">
-<!--CREDITOS-->
+        <div class="credits"><!--CREDITOS:START-->
+        <div class="credits-item">
+          <p class="credits-cite">¿Acaso soy otra cosa? Vinieron dictaduras militares, gobiernos civiles y nuevas dictaduras militares, me quitaron los libros, el pan, el hijo, desesperaron a mi madre.</p>
+          <p class="credits-meta">Juan Gelman, <i>Bajo la lluvia ajena (notas al pie de una derrota), 1980</i>. Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Bajo la lluvia ajena (1980)», sección III. <a href="https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=4" target="_blank" rel="noopener noreferrer">https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=4</a></p>
+          <p class="credits-meta">Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
         </div>
-        <p class="notice">Los seis artefactos son representaciones proceduales, no levantamientos técnicos de los objetos reales.</p>
+        <div class="credits-item">
+          <p class="credits-cite">arrastran sus lágrimas con un pañuelito detrás como barriendo el sufrimiento
+como no queriendo mojarlo
+para que el sufrimiento estalle y arda y haga asiento donde sentarse a pensar otra vez</p>
+          <p class="credits-meta">Juan Gelman, <i>Hacia el sur, 1982</i>. Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Hacia el sur (1982)», «Otras partes». <a href="https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5" target="_blank" rel="noopener noreferrer">https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5</a></p>
+          <p class="credits-meta">Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
+          <p class="credits-meta">Inscripción de la pieza: NUNCA MÁS. Consigna de las Madres y Abuelas de Plaza de Mayo, asociada al Informe de la CONADEP (1984), al alegato de Julio Strassera en el Juicio a las Juntas (1985) y a las marchas de la organización. <a href="https://continuemosestudiando.abc.gob.ar/contenido/palabra-clave-panuelazo" target="_blank" rel="noopener noreferrer">https://continuemosestudiando.abc.gob.ar/contenido/palabra-clave-panuelazo</a></p>
+        </div>
+        <div class="credits-item">
+          <p class="credits-cite">Quince mil desaparecidos,
+diez mil presos, cuatro mil muertos:
+las cifras desnudas de este terror.</p>
+          <p class="credits-meta">Rodolfo Walsh, <i>Carta abierta de un escritor a la Junta Militar, 1977</i>. Rodolfo Walsh, «Carta abierta de un escritor a la Junta Militar», Buenos Aires, 24 de marzo de 1977. Archivo CELS. <a href="https://www.cels.org.ar/common/documentos/carta_abierta_rodolfo_walsh.pdf" target="_blank" rel="noopener noreferrer">https://www.cels.org.ar/common/documentos/carta_abierta_rodolfo_walsh.pdf</a></p>
+          <p class="credits-meta">Documento histórico de derechos humanos y cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
+        </div>
+        <div class="credits-item">
+          <p class="credits-cite">Hace tiempo que somos como niños
+y no podemos decir lo que pensamos,
+como si el lápiz del censor
+nos borrara la voz en el cuaderno.</p>
+          <p class="credits-meta">María Elena Walsh, <i>Desventuras en el País-Jardín-de-Infantes, 1979</i>. María Elena Walsh, «Desventuras en el País-Jardín-de-Infantes», suplemento Cultura y Nación del diario Clarín, Buenos Aires, 16 de agosto de 1979. <a href="https://www.educ.ar/recursos/129099/desventuras-en-el-pais-jardin-de-infantes" target="_blank" rel="noopener noreferrer">https://www.educ.ar/recursos/129099/desventuras-en-el-pais-jardin-de-infantes</a></p>
+          <p class="credits-meta">Obra con derechos reservados (María Elena Walsh, 1930-2011). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
+        </div>
+        <div class="credits-item">
+          <p class="credits-cite">Del otro lado de la reja
+está la realidad, de este lado
+de la reja también está
+la realidad.</p>
+          <p class="credits-meta">Paco Urondo, <i>Poemas de la cárcel (Villa Devoto), 1973</i>. Francisco «Paco» Urondo, Obra poética, Adriana Hidalgo Editora, Buenos Aires, 2006, p. 412. <a href="https://catalogo.bn.gov.ar/" target="_blank" rel="noopener noreferrer">https://catalogo.bn.gov.ar/</a></p>
+          <p class="credits-meta">Obra con derechos reservados (Francisco Urondo, 1930-1976). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
+        </div>
+        <div class="credits-item">
+          <p class="credits-cite">En el fondo del río
+en el fondo del mar
+en el silencio de las aguas
+hay cadáveres.</p>
+          <p class="credits-meta">Néstor Perlongher, <i>Cadáveres, 1984</i>. Néstor Perlongher, Alambres, Editorial Último Reino, Buenos Aires, 1987; recogido en Poemas completos (1980-1992), Seix Barral, Buenos Aires, 1997, p. 119. <a href="https://catalogo.bn.gov.ar/" target="_blank" rel="noopener noreferrer">https://catalogo.bn.gov.ar/</a></p>
+          <p class="credits-meta">Obra con derechos reservados (Néstor Perlongher, 1949-1992). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
+        </div>
+<!--CREDITOS:END--></div>
+        <p class="notice">Los seis artefactos son representaciones procedurales, no levantamientos técnicos de los objetos reales.</p>
+        <p class="copyright-notice">Las citas breves se reproducen conforme al derecho de cita (art. 10, Ley 11.723). Los textos pertenecen a sus respectivos autores y herederos.</p>
       </div>
     </section>
   </main>
-
-  <script type="importmap">{"imports":{"three":"./vendor/three.js","motion":"./vendor/motion.js","glyphcss":"./vendor/glyphcss.js"}}</script>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

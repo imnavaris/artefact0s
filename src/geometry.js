@@ -27,6 +27,16 @@ function samplerFor(texture) {
 
 const hex = (r, g, b) => '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 
+function clampPaperColor(r, g, b, allowEmber = false) {
+  if (allowEmber) return '#d99b26';
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  const t = 0.56 + 0.34 * Math.min(1, Math.max(0, lum));
+  const R = Math.round(255 * t);
+  const G = Math.round(244 * t);
+  const B = Math.round(224 * t);
+  return hex(R, G, B);
+}
+
 export function toGlyphPolygons(root, opts = {}) {
   // Three (Y-up) -> glyph (Z-up). La rotacion (x, -z, y) conserva la orientacion
   // de las caras; la reflexion (x, z, y) las invierte y el objeto sale del reves.
@@ -56,9 +66,15 @@ export function toGlyphPolygons(root, opts = {}) {
           r += c[0]; g += c[1]; b += c[2]; painted++;
         }
       }
-      const color = painted
+      const rawColor = painted
         ? hex(Math.round(r / painted), Math.round(g / painted), Math.round(b / painted))
-        : base;
+        : '#' + base;
+      const isEmber = Boolean(mat && mat.userData && mat.userData.isEmber);
+      const hexStr = rawColor.startsWith('#') ? rawColor.slice(1) : rawColor;
+      const cr = parseInt(hexStr.slice(0, 2), 16);
+      const cg = parseInt(hexStr.slice(2, 4), 16);
+      const cb = parseInt(hexStr.slice(4, 6), 16);
+      const color = clampPaperColor(cr, cg, cb, isEmber);
       out.push({ vertices, color });
     }
   });

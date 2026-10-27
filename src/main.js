@@ -7,8 +7,6 @@ import { createFlight } from './models/flight.js';
 import { toGlyphPolygons, bounds } from './geometry.js';
 import { GlyphStage } from './glyph-stage.js';
 
-// Las seis piezas de la obra. El encuadre no es generico: cada pieza se
-// compone para su propia vista, y rotX/rotY estan en grados.
 const PIECES = [
   { id: 'book', create: createBook, title: 'El libro quemado' },
   { id: 'scarf', create: createScarf, title: 'El pañuelo' },
@@ -18,12 +16,6 @@ const PIECES = [
   { id: 'flight', create: createFlight, title: 'El vuelo' },
 ];
 
-// Pose de camara por artefacto: rotX/rotY en grados, zoom en celdas por
-// unidad. Cada pieza tiene su propia vista; no hay pose generica.
-// Las poses se calibraron mirando la pieza rasterizada (tools/cdp.mjs shot):
-// el libro se lee abierto con el lomo al medio (rotY 90), el pañuelo de frente
-// para que el triangulo se lea de cara (rotY 90), la silueta de persona de
-// frente (rotY 90) y las tijeras y el avion de perfil (rotY 30).
 const POSES = {
   book: { rotX: 70, rotY: 90, zoom: 120 },
   scarf: { rotX: 80, rotY: 90, zoom: 120 },
@@ -36,33 +28,35 @@ const POSES = {
 const host = document.getElementById('stage');
 const stage = new GlyphStage(host);
 
-// Trampa de errores: cualquier excepcion queda en el DOM, para poder verla
-// en el volcado sin abrir el navegador.
 const errors = [];
 addEventListener('error', (e) => errors.push(`${e.message} @ ${e.filename}:${e.lineno}`));
 addEventListener('unhandledrejection', (e) => errors.push(`rejection: ${e.reason}`));
 
-// La tipografia falla en silencio: se espera a que las fuentes esten listas y se
-// mide el avance real de la celda antes de calcular la grilla.
 await document.fonts.ready;
-const probe = document.createElement('span');
-probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font-size:14px';
-probe.style.fontFamily = "'Sligoil Micro',ui-monospace,'Cascadia Mono',Consolas,monospace";
-probe.textContent = 'MMMMMMMMMM';
-document.body.appendChild(probe);
-const cellW = probe.getBoundingClientRect().width / 10;
-probe.remove();
-// La trama va con celda de 14 px: a 10 px el poema no se leia de lejos.
-stage.setCellMetrics(cellW || 8, 14);
+
+let cellW = 8;
+
+function measureCellMetrics() {
+  const probe = document.createElement('span');
+  const computedCellH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-h')) || 14;
+  probe.style.cssText = `position:absolute;visibility:hidden;white-space:pre;font-size:${computedCellH}px`;
+  probe.style.fontFamily = "'Sligoil Micro',ui-monospace,'Cascadia Mono',Consolas,monospace";
+  probe.textContent = 'MMMMMMMMMM';
+  document.body.appendChild(probe);
+  cellW = probe.getBoundingClientRect().width / 10 || 8;
+  probe.remove();
+  stage.setCellMetrics(cellW, computedCellH);
+}
+
+measureCellMetrics();
 
 const corpus = await fetch('assets/texts/texts.json').then((r) => r.json());
 const quoteFor = (id) => corpus.texts.find((t) => t.piece === id);
 
 const q = new URLSearchParams(location.search);
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Override de encuadre para ajustar la pose de una pieza: ?piece=book&rx=90&ry=180
-// y ?p=0.5 para ver un estado intermedio sin scrollear.
 const debugPiece = q.get('piece');
 const poseOverride = { rx: q.has('rx') ? parseFloat(q.get('rx')) : null, ry: q.has('ry') ? parseFloat(q.get('ry')) : null };
 const debugP = q.has('p') ? parseFloat(q.get('p')) : null;
@@ -76,17 +70,11 @@ function poseOf(id) {
   return pose;
 }
 
-// Modelos: se construyen los seis, pero solo se dibuja la pieza activa.
 const models = new Map();
 for (const piece of PIECES) models.set(piece.id, piece.create());
 
-// La grilla se dimensiona antes de cualquier encuadre: medir sobre una grilla
-// de 80x24 en vez de la real deja las piezas fuera de cuadro.
 stage.resize(host.clientWidth, host.clientHeight);
 
-// Calentado: leer las texturas de cada pieza y rasterizarla una vez cuesta
-// ~85 ms la primera vez. Eso pasa durante la carga, no en pleno scroll.
-// De paso queda calculado el encuadre de cada pieza.
 for (const piece of PIECES) {
   const model = models.get(piece.id);
   const pose = poseOf(piece.id);
@@ -94,30 +82,25 @@ for (const piece of PIECES) {
   stage.camera.rotY = pose.rotY;
   stage.camera.zoom = pose.zoom;
   model.update(0);
-  stage.setPolygons(toGlyphPolygons(model.root));
-  stage.fittedZoom(piece.id);
+  const polys0 = toGlyphPolygons(model.root);
+  model.update(1);
+  const polys1 = toGlyphPolygons(model.root);
+  stage.fitMultiState(piece.id, [polys1, polys0]);
+  model.update(0);
 }
-
-// ---------------------------------------------------------------- scroll ----
-// El estado de cada pieza es funcion de su progreso local, sin memoria:
-// subir deshace lo que bajar hizo.
 
 const FREEZE_LO = 0.05;
 const FREEZE_HI = 0.85;
 
-// p local: progreso de la seccion, con aire de lectura al principio y al final.
 function progressOf(section) {
   return clamp((scrollY - section.top) / section.travel, 0, 1);
 }
 
-// El estado se congela fuera de [FREEZE_LO, FREEZE_HI]: la pieza tiene aire.
 function stateOf(p) {
   return clamp((p - FREEZE_LO) / (FREEZE_HI - FREEZE_LO), 0, 1);
 }
 
 function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
-
-// ------------------------------------------------------------- secciones ----
 
 const sections = [...document.querySelectorAll('.piece')].map((el) => ({
   el,
@@ -128,8 +111,6 @@ const sections = [...document.querySelectorAll('.piece')].map((el) => ({
   travel: 1,
 }));
 
-// Las medidas se cachean: leer el layout en cada cuadro fuerza un reflow y
-// el scroll se siente trabado. Se miden al cargar y en cada resize.
 function measureSections() {
   for (const s of sections) {
     s.top = docTop(s.el);
@@ -137,9 +118,6 @@ function measureSections() {
   }
 }
 
-// Posicion del elemento en el documento, sin depender del scroll actual:
-// con getBoundingClientRect, una recarga a mitad de la obra (el navegador
-// restaura el scroll) deja las secciones mal medidas.
 function docTop(el) {
   let y = 0;
   let node = el;
@@ -151,10 +129,6 @@ function docTop(el) {
 }
 measureSections();
 
-// La pieza activa es la ultima que ya paso por el centro de la ventana.
-// Con la regla de "la que contiene el centro", el cierre (que no es una
-// pieza) dejaba al escenario en la primera pieza: al final de la obra
-// el colofon se leia sobre el libro.
 function activeIndex() {
   const mid = scrollY + innerHeight * 0.5;
   let idx = 0;
@@ -164,50 +138,37 @@ function activeIndex() {
   return idx;
 }
 
-// ----------------------------------------------------------------- escena ----
-
 let current = -1;
-let yaw = 0;
-let pitch = 0;
+const userAngles = new Map();
 
 function applyPiece(index) {
   const section = sections[index];
-  const piece = PIECES.find((p) => p.id === section.id);
-  const model = models.get(section.id);
   const pose = poseOf(section.id);
+  const angles = userAngles.get(section.id) || { yaw: 0, pitch: 0 };
+  yaw = angles.yaw;
+  pitch = angles.pitch;
 
   stage.camera.rotX = pose.rotX + pitch;
   stage.camera.rotY = pose.rotY + yaw;
-  stage.camera.zoom = pose.zoom;
+  stage.camera.zoom = stage.fitCache.get(section.id) ?? pose.zoom;
 
   const quote = quoteFor(section.id);
-  // La inscripcion puede ser distinta del fragmento de lectura: el panuelo
-  // lleva la consigna, la columna de lectura lleva el poema.
   stage.setText(quote ? (quote.inscription || quote.excerpt) : '');
 
   document.querySelectorAll('.piece').forEach((el) => el.classList.toggle('is-active', el === section.el));
   current = index;
   updateReadingColumn(section.id);
   redraw();
-  // El encuadre de cada pieza se calculo en el calentamiento: reutilizarlo
-  // evita dos renders extra en cada cambio de pieza.
-  stage.fittedZoom(section.id);
 }
 
-// Vuelve a construir los poligonos de la pieza activa: el estado cambia la
-// geometria (las hojas se encogen, la tela se abre), no solo el color.
 function redraw() {
   const section = sections[current];
   if (!section) return;
   const model = models.get(section.id);
   model.update(section.state);
-  // La quema se declara antes del raster: el frente de fuego se escribe en
-  // los glifos de la misma pasada.
   stage.setBurn(model.burn ? model.burn(section.state) : 0);
   stage.setPolygons(toGlyphPolygons(model.root));
 }
-
-// --------------------------------------------------------------- scroll ------
 
 const damped = new Map();
 let last = performance.now();
@@ -222,17 +183,13 @@ function frame(now) {
   const section = sections[current];
   if (!section) { requestAnimationFrame(frame); return; }
   let target = debugP !== null ? debugP : stateOf(progressOf(section));
-  // Movimiento reducido: el estado salta en cuatro escalones, sin morphing.
   if (reduceMotion) target = Math.round(target * 3) / 3;
   const prev = damped.get(section.id) ?? target;
-  // Amortiguacion exponencial: el estado sigue al scroll sin pegarse.
   const next = (reduceMotion || debugP !== null)
     ? target
     : prev + (target - prev) * (1 - Math.exp(-dt * 5));
   damped.set(section.id, next);
 
-  // La geometria se reconstruye solo cuando el estado cambio lo bastante:
-  // convertir 19.000 triangulos cuesta ~16 ms y no vale la pena por centesimas.
   if (Math.abs(next - section.state) > 0.018) {
     section.state = next;
     redraw();
@@ -243,18 +200,15 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
-// El glow se actualiza en umbrales de estado, no en cada frame.
-const GLOW_STEPS = [0, 0.33, 0.66, 1];
+const GLOW_STEPS = [0.72, 0.86, 1];
 let glowStep = -1;
 function updateGlow(state) {
-  const step = GLOW_STEPS.findIndex((s) => state < s + 0.34);
-  const idx = step < 0 ? GLOW_STEPS.length - 1 : step;
+  const idx = state > 0.15 && state < 0.85 ? 2 : state > 0.02 ? 1 : 0;
   if (idx === glowStep) return;
   glowStep = idx;
   document.documentElement.style.setProperty('--glow', String(GLOW_STEPS[idx]));
 }
 
-// Parallax del objeto: -3% a +3%. El texto legible no se mueve.
 let sceneEl = null;
 function updateParallax(p) {
   if (reduceMotion) return;
@@ -262,14 +216,13 @@ function updateParallax(p) {
   if (sceneEl) sceneEl.style.transform = `translate3d(0,${(p - 0.5) * 6}%,0)`;
 }
 
-// --------------------------------------------------------------- arrastre ----
-// El arrastre gira la pieza y nada mas. Sin clic, sin estado, sin rebote.
-
 let dragging = false;
 let startX = 0;
 let startY = 0;
 let lastX = 0;
 let lastY = 0;
+let yaw = 0;
+let pitch = 0;
 
 host.addEventListener('pointerdown', (e) => {
   dragging = true;
@@ -280,18 +233,15 @@ host.addEventListener('pointerdown', (e) => {
 
 host.addEventListener('pointermove', (e) => {
   if (!dragging) return;
-  // A los 4 px de desplazamiento se considera arrastre; antes, no pasa nada.
   if (Math.hypot(e.clientX - startX, e.clientY - startY) < 4) return;
   const dx = e.clientX - lastX;
   const dy = e.clientY - lastY;
   lastX = e.clientX;
   lastY = e.clientY;
-  // Rotacion libre: la pieza da vueltas completas y se puede mirar de
-  // cualquier angulo. El pitch tiene tope porque mas alla la camara mira al
-  // piso. No hay rebote: la rotacion se queda donde quedo.
   yaw += dx * 0.25;
   if (Math.abs(yaw) > 3600) yaw -= Math.trunc(yaw / 360) * 360;
   pitch = clamp(pitch + dy * 0.12, -90, 90);
+  userAngles.set(sections[current].id, { yaw, pitch });
   const pose = poseOf(sections[current].id);
   stage.camera.rotX = pose.rotX + pitch;
   stage.camera.rotY = pose.rotY + yaw;
@@ -304,24 +254,49 @@ host.addEventListener('pointerup', (e) => {
 });
 host.addEventListener('pointercancel', () => { dragging = false; });
 
-// -------------------------------------------------------------- teclado ------
-// ArrowRight/ArrowLeft saltan al inicio de la pieza siguiente o anterior.
-
 window.addEventListener('keydown', (e) => {
-  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
   const target = e.target;
   if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
-  e.preventDefault();
-  const idx = activeIndex() + (e.key === 'ArrowRight' ? 1 : -1);
-  const next = sections[clamp(idx, 0, sections.length - 1)];
-  if (next) next.el.scrollIntoView({ behavior: 'auto', block: 'start' });
+
+  if (e.shiftKey && (e.key.startsWith('Arrow'))) {
+    e.preventDefault();
+    if (current < 0) return;
+    const secId = sections[current].id;
+    let angles = userAngles.get(secId) || { yaw: 0, pitch: 0 };
+    if (e.key === 'ArrowLeft') angles.yaw -= 12;
+    if (e.key === 'ArrowRight') angles.yaw += 12;
+    if (e.key === 'ArrowUp') angles.pitch = clamp(angles.pitch - 8, -85, 85);
+    if (e.key === 'ArrowDown') angles.pitch = clamp(angles.pitch + 8, -85, 85);
+    userAngles.set(secId, angles);
+    yaw = angles.yaw;
+    pitch = angles.pitch;
+    const pose = poseOf(secId);
+    stage.camera.rotX = pose.rotX + pitch;
+    stage.camera.rotY = pose.rotY + yaw;
+    stage.handle.rerender();
+    return;
+  }
+
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    const milestones = [
+      document.getElementById('threshold'),
+      ...sections.map(s => s.el),
+      document.getElementById('credits')
+    ].filter(Boolean);
+
+    const mid = scrollY + innerHeight * 0.35;
+    let curIdx = 0;
+    for (let i = 0; i < milestones.length; i++) {
+      if (milestones[i].getBoundingClientRect().top + scrollY <= mid) curIdx = i;
+    }
+    const targetIdx = clamp(curIdx + (e.key === 'ArrowRight' ? 1 : -1), 0, milestones.length - 1);
+    milestones[targetIdx].scrollIntoView({ behavior: 'auto', block: 'start' });
+  }
 });
 
-// ------------------------------------------------------------------ fit ------
-// El redimensionado recalcula la grilla: el encuadre de cada pieza vuelve a
-// medirse, porque la proporcion de la grilla cambia.
-
 const fit = () => {
+  measureCellMetrics();
   stage.resize(host.clientWidth, host.clientHeight);
   stage.fitCache.clear();
   measureSections();
@@ -329,12 +304,20 @@ const fit = () => {
   if (section) {
     const model = models.get(section.id);
     const pose = poseOf(section.id);
+    const angles = userAngles.get(section.id) || { yaw: 0, pitch: 0 };
+    yaw = angles.yaw;
+    pitch = angles.pitch;
     stage.camera.rotX = pose.rotX;
     stage.camera.rotY = pose.rotY;
     stage.camera.zoom = pose.zoom;
-    model.update(section.state);
-    stage.setPolygons(toGlyphPolygons(model.root));
-    stage.fittedZoom(section.id);
+    model.update(0);
+    const polys0 = toGlyphPolygons(model.root);
+    model.update(1);
+    const polys1 = toGlyphPolygons(model.root);
+    stage.fitMultiState(section.id, [polys1, polys0]);
+    stage.camera.rotX = pose.rotX + pitch;
+    stage.camera.rotY = pose.rotY + yaw;
+    redraw();
   } else {
     stage.fit();
   }
@@ -343,9 +326,6 @@ window.addEventListener('resize', fit);
 
 requestAnimationFrame(frame);
 
-// Columna de lectura: el texto completo vive en el DOM desde el primer render.
-// El servidor ya lo inyecta desde el corpus; esto solo completa lo que falte
-// (por ejemplo, si el documento se abre sin pasar por server.py).
 function updateReadingColumn(id) {
   const quote = quoteFor(id);
   const block = document.querySelector(`[data-piece="${id}"]`);
@@ -362,7 +342,6 @@ function updateReadingColumn(id) {
 
 for (const piece of PIECES) updateReadingColumn(piece.id);
 
-// Creditos: por cita, autor, obra, ano y procedencia verificada.
 {
   const box = document.querySelector('.credits');
   if (box && !box.textContent.trim()) {
@@ -380,8 +359,17 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
-// Sonda: recorre la obra con el scroll y deja el informe en el DOM.
-//   ?probe=1
+if (debugPiece) {
+  const debugSec = sections.find((s) => s.id === debugPiece);
+  if (debugSec) {
+    if (debugP === null) {
+      debugSec.el.scrollIntoView({ behavior: 'auto', block: 'start' });
+    } else {
+      scrollTo(0, debugSec.top);
+    }
+  }
+}
+
 if (q.has('probe')) {
   const report = [];
   const steps = 30;
@@ -413,7 +401,6 @@ if (q.has('probe')) {
 
 window.__artefactos = { stage, models, corpus, sections };
 
-// Diagnostico: caja envolvente y triangulos de cada pieza, para encuadrar.
 if (q.has('diag')) {
   const diag = document.createElement('pre');
   diag.id = 'diag';

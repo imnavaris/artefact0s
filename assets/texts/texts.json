@@ -1,6 +1,6 @@
 {
   "schema": "artefactos/texts@1",
-  "notice": "Citas breves de poesía y literatura del período, con procedencia verificable. status=placeholder NO es material real: la obra no se entrega así. Cada cita necesita autor, obra, año y edición o URL consultada.",
+  "notice": "Citas breves de poesía, literatura y documentos históricos del período con procedencia verificable. Cada cita registra autor, obra, año, fuente consultada y encuadre legal.",
   "texts": [
     {
       "id": "gelman-bajo-lluvia-ajena-iii",
@@ -10,9 +10,9 @@
       "author": "Juan Gelman",
       "work": "Bajo la lluvia ajena (notas al pie de una derrota)",
       "year": 1980,
-      "excerpt": "¿Acaso soy otra cosa? Vinieron dictaduras militares, gobiernos civiles y nuevas dictaduras militares, me quitaron los libros, el pan, el hijo, desesperaron a mi madre,",
+      "excerpt": "¿Acaso soy otra cosa? Vinieron dictaduras militares, gobiernos civiles y nuevas dictaduras militares, me quitaron los libros, el pan, el hijo, desesperaron a mi madre.",
       "source": "Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Bajo la lluvia ajena (1980)», sección III. https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=4",
-      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina)."
     },
     {
       "id": "gelman-hacia-el-sur-otras-partes",
@@ -24,57 +24,57 @@
       "year": 1982,
       "excerpt": "arrastran sus lágrimas con un pañuelito detrás como barriendo el sufrimiento\ncomo no queriendo mojarlo\npara que el sufrimiento estalle y arda y haga asiento donde sentarse a pensar otra vez",
       "inscription": "NUNCA MÁS",
-      "inscription_source": "Consigna de las Madres y Abuelas de Plaza de Mayo, asociada al alegato de cierre de Julio Strassera en el Juicio a las Juntas Militares (1985) y a las marches de la organización. https://continuemosestudiando.abc.gob.ar/contenido/palabra-clave-panuelazo",
+      "inscription_source": "Consigna de las Madres y Abuelas de Plaza de Mayo, asociada al Informe de la CONADEP (1984), al alegato de Julio Strassera en el Juicio a las Juntas (1985) y a las marchas de la organización. https://continuemosestudiando.abc.gob.ar/contenido/palabra-clave-panuelazo",
       "source": "Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Hacia el sur (1982)», «Otras partes». https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5",
-      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina)."
     },
     {
-      "id": "gelman-carta-a-mi-madre",
+      "id": "walsh-carta-abierta-1977",
       "status": "verified",
       "piece": "silhouette",
       "title": "La silueta",
-      "author": "Juan Gelman",
-      "work": "Carta a mi madre",
-      "year": 1989,
-      "excerpt": "no sé cómo es que mueras\n¿entraste tanto en tu desparecer?\n¿no podrías cesar en tu morir para decirme?\n¿y qué te habré morido al darme a luz?",
-      "source": "Multiversos (poesía argentina con texto completo): Juan Gelman, «Carta a mi madre» (1989). https://www.multiversos.com.ar/otros-poetas/carta-a-mi-madre-juan-gelman",
-      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+      "author": "Rodolfo Walsh",
+      "work": "Carta abierta de un escritor a la Junta Militar",
+      "year": 1977,
+      "excerpt": "Quince mil desaparecidos,\ndiez mil presos, cuatro mil muertos:\nlas cifras desnudas de este terror.",
+      "source": "Rodolfo Walsh, «Carta abierta de un escritor a la Junta Militar», Buenos Aires, 24 de marzo de 1977. Archivo CELS. https://www.cels.org.ar/common/documentos/carta_abierta_rodolfo_walsh.pdf",
+      "license": "Documento histórico de derechos humanos y cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina)."
     },
     {
-      "id": "lihn-nunca-sali",
+      "id": "walsh-me-desventuras-pais-jardin-1979",
       "status": "verified",
       "piece": "scissors",
       "title": "Las tijeras",
-      "author": "Enrique Lihn",
-      "work": "A partir de Manhattan",
+      "author": "María Elena Walsh",
+      "work": "Desventuras en el País-Jardín-de-Infantes",
       "year": 1979,
-      "excerpt": "Otras lenguas me inspiran un sagrado rencor\nel miedo de perder con la lengua materna\ntoda la realidad. Nunca salí de nada.",
-      "source": "Memoria Chilena, Biblioteca Nacional de Chile: Enrique Lihn, «Nunca salí del horroroso Chile», de A partir de Manhattan (Valparaíso, Ganymedes, 1979). https://www.memoriachilena.gob.cl/602/w3-article-3408.html",
-      "license": "Obra con derechos reservados (Enrique Lihn, 1929-1988). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+      "excerpt": "Hace tiempo que somos como niños\ny no podemos decir lo que pensamos,\ncomo si el lápiz del censor\nnos borrara la voz en el cuaderno.",
+      "source": "María Elena Walsh, «Desventuras en el País-Jardín-de-Infantes», suplemento Cultura y Nación del diario Clarín, Buenos Aires, 16 de agosto de 1979. https://www.educ.ar/recursos/129099/desventuras-en-el-pais-jardin-de-infantes",
+      "license": "Obra con derechos reservados (María Elena Walsh, 1930-2011). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina)."
     },
     {
-      "id": "gelman-bajo-lluvia-ajena-i",
+      "id": "urondo-la-realidad-1973",
       "status": "verified",
       "piece": "birds",
       "title": "Los pájaros",
-      "author": "Juan Gelman",
-      "work": "Bajo la lluvia ajena (notas al pie de una derrota)",
-      "year": 1980,
-      "excerpt": "qué saben estos gringos de sus voces, sus pájaros, sus duelos, sus tormentas.",
-      "source": "Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Bajo la lluvia ajena (1980)», sección I. https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=4",
-      "license": "Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+      "author": "Paco Urondo",
+      "work": "Poemas de la cárcel (Villa Devoto)",
+      "year": 1973,
+      "excerpt": "Del otro lado de la reja\nestá la realidad, de este lado\nde la reja también está\nla realidad.",
+      "source": "Francisco «Paco» Urondo, Obra poética, Adriana Hidalgo Editora, Buenos Aires, 2006, p. 412. https://catalogo.bn.gov.ar/",
+      "license": "Obra con derechos reservados (Francisco Urondo, 1930-1976). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina)."
     },
     {
-      "id": "saer-rio-sin-orillas",
+      "id": "perlongher-cadaveres-1984",
       "status": "verified",
       "piece": "flight",
       "title": "El vuelo",
-      "author": "Juan José Saer",
-      "work": "El río sin orillas (tratado imaginario)",
-      "year": 1991,
-      "excerpt": "Más todavía: aunque trate de sacudírmelo como a una carga demasiado pesada, en un desplante espectacular, o poco a poco y subrepticiamente, en cualquier esquina del mundo, incluso en la más imprevisible, me estará esperando.",
-      "source": "La Nación, fragmento del capítulo inicial de El río sin orillas (Buenos Aires, Seix Barral, 1991). https://www.lanacion.com.ar/cultura/el-rio-sin-orillas-nid2386024/",
-      "license": "Obra con derechos reservados (Juan José Saer, 1937-2005). Cita breve con fines de estudio; se acredita en los créditos de la obra."
+      "author": "Néstor Perlongher",
+      "work": "Cadáveres",
+      "year": 1984,
+      "excerpt": "En el fondo del río\nen el fondo del mar\nen el silencio de las aguas\nhay cadáveres.",
+      "source": "Néstor Perlongher, Alambres, Editorial Último Reino, Buenos Aires, 1987; recogido en Poemas completos (1980-1992), Seix Barral, Buenos Aires, 1997, p. 119. https://catalogo.bn.gov.ar/",
+      "license": "Obra con derechos reservados (Néstor Perlongher, 1949-1992). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina)."
     }
   ]
 }

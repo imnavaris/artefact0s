@@ -23,6 +23,7 @@ export class GlyphStage {
     this.host = host;
     this.text = '';
     this.lines = [];
+    this.stream = '';
     this.burn = 0;
     this.extent = null;
     this.cellW = CELL_W;
@@ -49,8 +50,8 @@ export class GlyphStage {
       // por brillo medio.
       smoothShading: false,
       doubleSided: opts.doubleSided !== false,
-      directionalLight: { direction: [0.4, 0.6, 0.7], intensity: 0.85 },
-      ambientLight: { intensity: 0.45 },
+      directionalLight: { direction: [0.4, 0.6, 0.7], intensity: 0.45 },
+      ambientLight: { intensity: 0.75 },
       transformCells: (grid) => this.sculpt(grid),
     });
   }
@@ -66,6 +67,7 @@ export class GlyphStage {
       .filter(Boolean)
       .map((line) => line.split(/\s+/).join('·'));
     this.text = text;
+    this.stream = this.lines.join('·') + '·';
   }
 
   // Avance de la quema: lo usa el frente de fuego de la inscripcion.
@@ -87,24 +89,19 @@ export class GlyphStage {
       }
     }
     this.extent = maxC < 0 ? null : { minC, maxC, minR, maxR };
-    const lines = this.lines;
-    if (!lines || !lines.length) return;
-    // Con una sola linea el texto se repite para llenar la fila: con varias,
-    // cada verso arranca en una fila y el resto de la fila queda libre.
-    const single = lines.length === 1;
-    let li = 0, ci = 0;
+    const stream = this.stream;
+    if (!stream) return;
+    let idx = 0;
     for (let r = 0; r < grid.rows; r++) {
       let wrote = false;
       for (let c = 0; c < grid.cols; c++) {
         const i = r * grid.cols + c;
         if (grid.char[i] === ' ' || grid.depth[i] === -Infinity) continue;
-        if (wrote && ci >= lines[li].length && !single) break;
-        if (ci >= lines[li].length) { li = (li + 1) % lines.length; ci = 0; }
-        const line = lines[li];
-        if (!line.length) continue;
-        grid.char[i] = line[ci++];
+        grid.char[i] = stream[idx % stream.length];
+        idx++;
         wrote = true;
       }
+      if (wrote) idx = (idx + 3) % stream.length;
     }
     this.burnCells(grid);
   }
@@ -121,26 +118,32 @@ export class GlyphStage {
         if (grid.char[i] === ' ' || grid.depth[i] === -Infinity) continue;
         const d = e.minR + this.burn * rows * 1.05 + wobble(c) - r;
         if (d <= 0) continue;
-        grid.char[i] = d > 4
+        const isAsh = d > 4;
+        grid.char[i] = isAsh
           ? ASH[hash(r, c) % ASH.length]
           : FLAME[hash(r, c) % FLAME.length];
+        if (grid.color) {
+          grid.color[i] = isAsh ? '#9e9688' : '#d99b26';
+        }
       }
     }
   }
 
   // La malla se reutiliza: recrearla en cada cambio de estado cuesta un
   // pico de 86 ms. `setPolygons` sobre la misma malla solo cambia los datos.
-  setPolygons(polygons) {
+  setPolygons(polygons, render = true) {
     if (!this.mesh) {
       this.mesh = this.handle.add(polygons);
     } else {
       this.mesh.setPolygons(polygons);
     }
-    this.handle.rerender();
+    if (render) {
+      this.handle.rerender();
+    }
   }
 
   // Ajustar el zoom para que el objeto entre en la grilla en los dos ejes.
-  // El ajuste es de dos renders, no de cinco: iterar cinco veces costaba un
+  // El ajuste es de dois renders, no de cinco: iterar cinco veces costaba un
   // pico de 86 ms en cada cambio de pieza.
   fit(targetW = 0.72, targetH = 0.82) {
     const base = this.handle.getBaseResolution();
@@ -167,12 +170,33 @@ export class GlyphStage {
       this.fitCache.set(key, this.camera.zoom);
     } else {
       const zoom = this.fitCache.get(key);
-      // Sin cambio de zoom no hace falta rasterizar otra vez.
-      if (Math.abs(zoom - this.camera.zoom) > 0.001) {
-        this.camera.zoom = zoom;
-        this.handle.rerender();
+      this.camera.zoom = zoom;
+      this.handle.rerender();
+    }
+    return this.camera.zoom;
+  }
+
+  fitMultiState(key, statesPolys, targetW = 0.72, targetH = 0.80) {
+    const base = this.handle.getBaseResolution();
+    let minC = Infinity, maxC = -1, minR = Infinity, maxR = -1;
+    for (const polys of statesPolys) {
+      this.setPolygons(polys, true);
+      const e = this.extent;
+      if (!e) continue;
+      if (e.minC < minC) minC = e.minC;
+      if (e.maxC > maxC) maxC = e.maxC;
+      if (e.minR < minR) minR = e.minR;
+      if (e.maxR > maxR) maxR = e.maxR;
+    }
+    if (maxC >= minC && maxR >= minR) {
+      const w = maxC - minC + 1;
+      const h = maxR - minR + 1;
+      const ratio = Math.min((targetW * base.cols) / w, (targetH * base.rows) / h);
+      if (Math.abs(ratio - 1) >= 0.03) {
+        this.camera.zoom *= ratio;
       }
     }
+    this.fitCache.set(key, this.camera.zoom);
     return this.camera.zoom;
   }
 
@@ -195,11 +219,5 @@ export class GlyphStage {
     this.cellW = cellW;
     this.cellH = cellH;
     this.cellAspect = cellH / cellW;
-  }
-
-  rotate(yaw, pitch) {
-    this.camera.rotY = yaw;
-    this.camera.rotX = pitch;
-    this.handle.rerender();
   }
 }

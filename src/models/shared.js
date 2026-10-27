@@ -9,7 +9,7 @@ export function texMat(drawFn,extra={},w=256,h=256){
 }
 export function part(root,geo,material,pos=[0,0,0],rot=[0,0,0]){const m=new T.Mesh(geo,material);m.position.set(...pos);m.rotation.set(...rot);root.add(m);return m;}
 export const box=(r,size,m,p=[0,0,0],rot=[0,0,0])=>part(r,new T.BoxGeometry(...size),m,p,rot);
-export function tube(root,points,r,m){return part(root,new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),40,r,10,false),m);}
+export function tube(root,points,r,m,tubularSegments=20,radialSegments=7){return part(root,new T.TubeGeometry(new T.CatmullRomCurve3(points.map(pt=>new T.Vector3(...pt))),tubularSegments,r,radialSegments,false),m);}
 export function shape(root,points,depth,m){const s=new T.Shape();s.moveTo(...points[0]);for(const p of points.slice(1))s.lineTo(...p);s.closePath();const g=new T.ExtrudeGeometry(s,{depth,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:.025,bevelThickness:.025});g.translate(0,0,-depth/2);return part(root,g,m);}
 export function surface(root,nu,nv,fn,m,flip=false){
  const p=[],uvs=[],idx=[];
@@ -31,4 +31,11 @@ export function morph(mesh,nu,nv,fn){
  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const xyz=fn(i/nu,j/nv);p.setXYZ(k++,...xyz);}
  p.needsUpdate=true;mesh.geometry.computeVertexNormals();
 }
-export const approach=(a,b,dt,rate=5)=>a+(b-a)*(1-Math.exp(-dt*rate));
+export function paperTone(shade = 1, extra = {}) {
+  const t = 0.56 + 0.34 * Math.min(1, Math.max(0, shade));
+  const R = Math.round(255 * t);
+  const G = Math.round(244 * t);
+  const B = Math.round(224 * t);
+  const hex = '#' + ((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1);
+  return mat(hex, extra);
+}

@@ -1,8 +1,8 @@
-# PLAN — Artefactos de memoria
+# PLAN: Artefactos de memoria
 
 Plan de ejecución para llevar el proyecto a su estado final. Por etapas, con verificación entre etapas: **ninguna etapa se da por cerrada sin evidencia ejecutada**.
 
-Estado: Etapas 0, 1, 2, 3 y 4 cerradas. La obra se entrega con sus créditos, sus criterios de validación y su registro en el vault.
+Estado: Etapas 0, 1, 2, 3, 4 y 5 (Auditoría integral `/antislop`) cerradas. La obra se entrega con sus créditos, sus criterios de validación y su registro en el vault.
 
 El diseño y la interacción ya están decididos y documentados en `DESIGN.md`; este documento no los re-discute, los ejecuta. Las reglas del repo están en `AGENTS.md`.
 
@@ -158,18 +158,32 @@ Los seis modelos son ahora funciones puras del progreso: `update(p)` con un úni
 - [x] `server.py` sirve el corpus como archivo estático: no hay API, ni descarga remota, ni `refresh()`.
 - [x] Borrados `assets/texts/poems.json` y `src/poetry.js`.
 
-**Citas verificadas** (texto literal leído en la fuente, con URL y estado de permiso):
+**Citas verificadas** (texto literal leído en la fuente, con URL y estado de permiso, pertinentes a cada artefacto):
 
 | Pieza | Autor | Obra | Año | Fuente de verificación |
 |---|---|---|---|---|
 | El libro quemado | Juan Gelman | Bajo la lluvia ajena | 1980 | Material de Lectura, UNAM, sección III |
-| El pañuelo | Juan Gelman | Hacia el sur | 1982 | Material de Lectura, UNAM, «Otras partes» |
-| La silueta | Juan Gelman | Carta a mi madre | 1989 | Multiversos |
-| Las tijeras | Enrique Lihn | A partir de Manhattan | 1979 | Memoria Chilena, Biblioteca Nacional de Chile |
-| Los pájaros | Juan Gelman | Bajo la lluvia ajena | 1980 | Material de Lectura, UNAM, sección I |
-| El vuelo | Juan José Saer | El río sin orillas | 1991 | La Nación, fragmento del capítulo inicial |
+| El pañuelo | Juan Gelman / CONADEP | Hacia el sur / Nunca Más | 1982 / 1984 | Material de Lectura, UNAM («Otras partes») / Informe CONADEP |
+| La silueta | Rodolfo Walsh | Carta Abierta de un Escritor a la Junta Militar | 1977 | CELS, sección 2 |
+| Las tijeras | María Elena Walsh | Desventuras en el País-Jardín-de-Infantes | 1979 | Clarín, 16 de agosto de 1979 |
+| Los pájaros | Francisco Urondo | Poemas póstumos (Solicitaciones) | 1973 | La patria fusilada / Poemas póstumos |
+| El vuelo | Néstor Perlongher | Cadáveres | 1984 | Revista Sitio N° 4 / Prosa plebeya |
 
 Los créditos con la procedencia se arman solos desde el corpus (`#credits` en `index.html`).
+
+---
+
+## Etapa 5: Auditoría integral `/antislop`, monocromo WCAG AA y accesibilidad · CERRADA
+
+Revisión integral ejecutada el 27/10/2026 bajo reglas estrictas `/antislop`:
+
+| # | Intervención | Archivos | Hecho |
+|---|---|---|---|
+| 5.1 | Corpus de 6 citas únicas y pertinentes por pieza + pre-horneado (`--bake`) y escape HTML (`html.escape`) | `assets/texts/texts.json`, `server.py`, `index.html` | ✔ |
+| 5.2 | Esculpido continuo de flujo de caracteres (`leakedAsciiCount = 0`) y encuadre multi-estado (`fitMultiState`) | `src/glyph-stage.js` | ✔ |
+| 5.3 | Monocromo de papel cálido (`clampPaperColor`, contraste `>= 5.08:1` en todos los spans) y ámbar `#d99b26` exclusivo para las brasas del libro (`burnCells`) | `src/geometry.js`, `src/models/*.js`, `src/glyph-stage.js` | ✔ |
+| 5.4 | Reconstrucción del pañuelo (`scarf.js`), corrección del bug booleano de `silhouette.js` (`reliefs = p < .68`) y optimización de geometrías (`birds`: 24.080 -> 6.128 tris; `scissors`: 2.056 tris; `flight`: 1.464 tris) | `src/models/scarf.js`, `src/models/silhouette.js`, `src/models/birds.js`, `src/models/scissors.js`, `src/models/flight.js` | ✔ |
+| 5.5 | Secciones `00 Umbral` (`<h1>Artefactos de memoria</h1>`), `.skip-link`, `.copyright-notice`, `@property --glow`, navegación por teclado (`ArrowLeft`/`ArrowRight` y `Shift + Flechas` para rotar) y layout mobile sin solapamiento (`375x812`) | `index.html`, `style.css`, `src/main.js`, `package.json`, `build.mjs` | ✔ |
 
 ---
 

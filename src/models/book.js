@@ -5,73 +5,52 @@ const clamp01=(v)=>v<0?0:v>1?1:v;
 export function createBook(){
   const root=new T.Group();
 
-  // Rich multi-tone antique leather cover & contratapa texture (bright warm terracotta, mahogany, gold-ochre, and char)
+  // Tapa y contratapa en tonos cálidos de papel y cartón antiguo con marco grabado
   const coverMat=texMat((c,w,h)=>{
    const g=c.createLinearGradient(0,0,w,h);
-   g.addColorStop(0,'#c44d34');
-   g.addColorStop(.35,'#e06d48');
-   g.addColorStop(.7,'#9e3522');
-   g.addColorStop(1,'#5e2218');
+   g.addColorStop(0,'#9c9486');
+   g.addColorStop(.5,'#b8b0a0');
+   g.addColorStop(1,'#8c8476');
    c.fillStyle=g;c.fillRect(0,0,w,h);
-   // Ornate golden-ochre border frame & corner plates on contratapa
-   c.strokeStyle='#f5c869';c.lineWidth=14;c.strokeRect(18,18,w-36,h-36);
-   c.strokeStyle='#d99438';c.lineWidth=6;c.strokeRect(38,38,w-76,h-76);
-   // Central emblem on contratapa
-   c.fillStyle='#f5c869';
-   c.beginPath();c.arc(w/2,h/2,38,0,Math.PI*2);c.fill();
-   c.fillStyle='#a83824';
-   c.beginPath();c.arc(w/2,h/2,22,0,Math.PI*2);c.fill();
-   // Burn/charred edge patches
-   for(let i=0;i<36;i++){
-    const ang=(i/36)*Math.PI*2;
-    const x=w/2+Math.cos(ang)*(w*.46),y=h/2+Math.sin(ang)*(h*.46);
-    const rg=c.createRadialGradient(x,y,2,x,y,24);
-    rg.addColorStop(0,'rgba(45,25,18,0.75)');
-    rg.addColorStop(1,'rgba(0,0,0,0)');
-    c.fillStyle=rg;c.fillRect(x-24,y-24,48,48);
-   }
-  },{roughness:.5,metalness:.18});
+   c.strokeStyle='#dfd8c8';c.lineWidth=12;c.strokeRect(18,18,w-36,h-36);
+  },{roughness:.6,metalness:.08});
 
-  const brassMat=mat('#f5c869',{roughness:.3,metalness:.65});
+  const brassMat=mat('#dfd8c8',{roughness:.3,metalness:.4});
   const spineMat=texMat((c,w,h)=>{
    const g=c.createLinearGradient(0,0,w,0);
-   g.addColorStop(0,'#8c3220');g.addColorStop(.5,'#d45b3e');g.addColorStop(1,'#8c3220');
+   g.addColorStop(0,'#948c7e');g.addColorStop(.5,'#b5ad9e');g.addColorStop(1,'#948c7e');
    c.fillStyle=g;c.fillRect(0,0,w,h);
-   c.fillStyle='#f5c869';
-   for(const y of [.14,.32,.5,.68,.86])c.fillRect(0,y*h-6,w,12);
-  },{roughness:.48,metalness:.22});
+   c.fillStyle='#dfd8c8';
+   for(const y of [.14,.32,.5,.68,.86])c.fillRect(0,y*h-4,w,8);
+  },{roughness:.55,metalness:.1});
 
   const pageBlockMat=texMat((c,w,h)=>{
    const g=c.createLinearGradient(0,0,w,0);
-   g.addColorStop(0,'#e0c99e');g.addColorStop(.68,'#fff4dc');g.addColorStop(.9,'#c49460');g.addColorStop(1,'#5c3828');
+   g.addColorStop(0,'#c8c0b0');g.addColorStop(.7,'#e6dfd1');g.addColorStop(1,'#b5ad9e');
    c.fillStyle=g;c.fillRect(0,0,w,h);
-   c.fillStyle='rgba(120,82,50,0.32)';
+   c.fillStyle='rgba(140,132,118,0.25)';
    for(let y=0;y<h;y+=6)c.fillRect(0,y,w,2);
-  },{roughness:.68,metalness:.05});
+  },{roughness:.65,metalness:.03});
 
   const paperMat=texMat((c,w,h)=>{
    const g=c.createRadialGradient(w*.32,h*.5,12,w*.5,h*.5,w*.72);
-   g.addColorStop(0,'#d49b62');
-   g.addColorStop(.35,'#f5e6c4');
-   g.addColorStop(.76,'#fff8e6');
-   g.addColorStop(.92,'#b87c48');
-   g.addColorStop(1,'#593626');
+   g.addColorStop(0,'#d4ccb8');
+   g.addColorStop(.6,'#ebe4d6');
+   g.addColorStop(1,'#b8b0a0');
    c.fillStyle=g;c.fillRect(0,0,w,h);
-   c.fillStyle='rgba(110,74,46,0.36)';
-   for(let y=26;y<h-26;y+=12)c.fillRect(26,y,w-58-(y%22),3);
-  },{roughness:.68,metalness:.04});
+   c.fillStyle='rgba(120,112,98,0.22)';
+   for(let y=26;y<h-26;y+=12)c.fillRect(26,y,w-58-(y%22),2);
+  },{roughness:.65,metalness:.02});
 
-  // Papel carbonizado: sin fuego ni brasas, solo la fibra quemada con vetas
-  // incandescentes en la grieta.
+  // Ceniza clara legible en tonos cálidos sin negros oscuros
   const charMat=texMat((c,w,h)=>{
    const g=c.createRadialGradient(w*.38,h*.5,10,w*.5,h*.5,w*.7);
-   g.addColorStop(0,'#7a3520');
-   g.addColorStop(.32,'#4a2216');
-   g.addColorStop(.66,'#2b1710');
-   g.addColorStop(1,'#171009');
+   g.addColorStop(0,'#9e9688');
+   g.addColorStop(.5,'#8e8678');
+   g.addColorStop(1,'#7e7668');
    c.fillStyle=g;c.fillRect(0,0,w,h);
-   c.strokeStyle='rgba(196,84,28,0.55)';
-   c.lineWidth=3;
+   c.strokeStyle='rgba(158,150,136,0.4)';
+   c.lineWidth=2;
    for(let i=0;i<7;i++){
     const y=18+i*(h-36)/6;
     c.beginPath();
@@ -79,17 +58,16 @@ export function createBook(){
     c.bezierCurveTo(w*.36,y-16,w*.58,y+18,w*.86,y-6);
     c.stroke();
    }
-  },{roughness:.86,metalness:.02});
+  },{roughness:.8,metalness:.02});
 
-  // El frente de fuego: la hoja que se esta quemando todavia tiene brasa.
+  // Hojas en combustión con el acento ocre/brasa autorizado
   const emberMat=texMat((c,w,h)=>{
    const g=c.createLinearGradient(0,0,w*.3,h);
-   g.addColorStop(0,'#e8862c');
-   g.addColorStop(.28,'#c2551a');
-   g.addColorStop(.6,'#5d2410');
-   g.addColorStop(1,'#22120b');
+   g.addColorStop(0,'#d99b26');
+   g.addColorStop(.4,'#e89c28');
+   g.addColorStop(1,'#9e8678');
    c.fillStyle=g;c.fillRect(0,0,w,h);
-   c.strokeStyle='rgba(255,196,92,0.7)';
+   c.strokeStyle='rgba(217,155,38,0.7)';
    c.lineWidth=2;
    for(let i=0;i<9;i++){
     const y=10+i*(h-20)/8;
@@ -98,11 +76,12 @@ export function createBook(){
     c.bezierCurveTo(w*.3,y-10,w*.5,y+12,w*.82,y-4);
     c.stroke();
    }
-  },{roughness:.8,metalness:.02});
+  },{roughness:.75,metalness:.05});
+  emberMat.userData = { isEmber: true };
 
   const pages=[];
 
-  // Curved central spine (lomo) with golden binding ribs so contratapa is 100% solid
+  // Lomo central con costillas de encuadernación
   const spineGeo=new T.CylinderGeometry(.24,.24,2.14,22,1,false,Math.PI*.48,Math.PI*1.04);
   spineGeo.rotateX(Math.PI/2);
   part(root,spineGeo,spineMat,[0,-.42,0]);
@@ -112,16 +91,14 @@ export function createBook(){
    part(root,rib,brassMat,[0,-.42,z]);
   }
 
-  // Left and right book halves hinged properly around Z axis. La bisagra se
-  // abre bastante: con las tapas casi planas, la hoja de arriba tapa las
-  // demas y el libro se lee como una masa, no como un libro abierto.
+  // Mitades del libro articuladas en el eje Z
   for(const sign of [-1,1]){
    const half=new T.Group();
    half.position.set(sign*.14,-.46,0);
    half.rotation.z=-sign*.52;
    root.add(half);
 
-   // Hardcover board (tapa / contratapa) + decorative relief panels on contratapa
+   // Tapa dura con paneles de relieve
    box(half,[1.68,.10,2.14],coverMat,[sign*.84,-.05,0]);
    box(half,[1.40,.045,1.84],coverMat,[sign*.84,-.11,0]);
    box(half,[.52,.055,.66],brassMat,[sign*.84,-.12,0]);
@@ -129,13 +106,10 @@ export function createBook(){
     box(half,[.28,.12,.28],brassMat,[sign*1.55,-.05,cz]);
    }
 
-   // Solid page block resting on cover so sides and back have full volume
+   // Bloque de páginas sólido
    box(half,[1.56,.20,2.02],pageBlockMat,[sign*.80,.09,0]);
 
-   // Arched pages on top. El paso entre hojas es de 0,05 unidades (una celda):
-   // con menos, las nueve hojas se pisan y la trama hierve. La malla es de
-   // 18x14: con 26x20 el libro tenia 19.000 triangulos y la conversion
-   // costaba 16 ms por cuadro, que es lo que hacia trabar el scroll.
+   // Páginas arqueadas optimizadas en 18x14 segmentos
    for(let n=0;n<9;n++){
     const height=.18+n*.05;
     const page=surface(half,18,14,(u,v)=>{
@@ -150,11 +124,8 @@ export function createBook(){
   root.rotation.y=-.22;
   root.position.y=-.18;
 
-  // La quema arranca por la hoja mas alta de cada tanda.
   const burnOrder=[...pages].sort((a,b)=>b.n-a.n);
 
-  // Cada hoja tarda una fraccion del recorrido en quemarse y las hojas se
-  // escalonan: si todas arden a la vez, el libro no llega a leerse quemandose.
   const SPAN=.55;
   const burnAt=(i,p)=>{
    const start=(i/burnOrder.length)*(1-SPAN);
@@ -164,7 +135,6 @@ export function createBook(){
   return {
    root,
    kind:'book',
-   // El estado es funcion del progreso: bajar el scroll deshace la quema.
    update(p){
     burnOrder.forEach((pg,i)=>{
      const amount=burnAt(i,p);
@@ -172,7 +142,6 @@ export function createBook(){
      mesh.material=amount>=1?charMat:amount>0?emberMat:paperMat;
      morph(mesh,18,14,(u,v)=>{
       const arch=Math.sin(u*Math.PI)*(.18+n*.014)-u*.04;
-      // La hoja carbonizada se encoge y sus bordes se levantan.
       const shrink=1-.34*amount;
       const curl=amount*.30*Math.sin(u*Math.PI)*Math.pow(v,2);
       const edge=amount*.22*Math.pow(Math.abs(u-.5)*2,3);
@@ -184,7 +153,6 @@ export function createBook(){
      });
     });
    },
-   // El motor usa esto para pintar el frente de fuego en los glifos.
    burn(p){
     let sum=0;
     for(let i=0;i<burnOrder.length;i++)sum+=burnAt(i,p);

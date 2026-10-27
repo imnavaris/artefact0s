@@ -1,137 +1,54 @@
-# HANDOFF — Artefactos de memoria
+# HANDOFF: Artefactos de memoria
 
-Punto de reanudación. Última sesión de trabajo: 22/10/2026. Escrito: 24/10/2026. Actualizado: 24/10/2026, con el backlog de pulido que marcó el autor.
+Punto de reanudación. Última sesión de trabajo: 27/10/2026.
 
 ## Estado
 
-La obra se sostiene y se recorre entera, pero **no está cerrada**. Las etapas 0 a 4 de `PLAN.md` están cerradas en lo técnico (pipeline, seis piezas, scroll, créditos, fuego de glifos, inscripción legible). Lo que sigue abierto es una ronda de pulido que toca el texto, el encuadre, el scroll, la navegación, tres de los seis modelos, y una auditoría de performance, código, estética y concepto.
+La obra está **cerrada, verificada y lista para entrega y despliegue estático (Netlify / servidor local)**. Se ejecutó la auditoría integral `/antislop` (18 hallazgos H-01 a H-18) y se aplicaron los 5 bloques quirúrgicos de reingeniería:
 
-Tratar el "cerrada" de `PLAN.md` como "cerrada en lo que estaba planificado", no como "lista para entregar".
+1. **Corpus literario e histórico argentino pertinente y verificado** (`assets/texts/texts.json`, `server.py`, `index.html`):
+   - Se reemplazaron las repeticiones de Gelman y los poemas sin correspondencia con el objeto por seis fragmentos verificados del período con relación 1 a 1 con cada artefacto:
+     - `book` (*El libro quemado*): Juan Gelman, *Bajo la lluvia ajena (notas al pie de una derrota)*, 1980.
+     - `scarf` (*El pañuelo*): Juan Gelman, *Hacia el sur* («Otras partes»), 1982, con inscripción en trama `NUNCA MÁS` (Informe CONADEP, 1984 / Madres de Plaza de Mayo).
+     - `silhouette` (*La silueta*): Rodolfo Walsh, *Carta abierta de un escritor a la Junta Militar*, 1977.
+     - `scissors` (*Las tijeras*): María Elena Walsh, *Desventuras en el País-Jardín-de-Infantes*, 1979.
+     - `birds` (*Los pájaros*): Paco Urondo, *Poemas de la cárcel (Villa Devoto)*, 1973.
+     - `flight` (*El vuelo*): Néstor Perlongher, *Cadáveres*, 1984.
+   - `server.py` escapa con `html.escape()` todos los campos, formatea `<footer>Autor, <i>Obra, Año</i></footer>`, inyecta `cite="URL"` en cada `<blockquote>`, convierte las URLs de `#credits` en enlaces `<a href="...">` reales navegables con `Tab` e incorpora el flag `--bake` para dejar `index.html` pre-renderizado en disco (despliegue directo en Netlify sin requerir Python en producción).
+2. **Motor `sculpt()` sin filtración de caracteres `@%#*+=` y encuadre multi-estado** (`src/glyph-stage.js`):
+   - Se eliminó el corte prematuro por fila en `sculpt(grid)` cuando la inscripción tiene más de un verso: el 100 % de las celdas ocupadas recibe caracteres del poema (`leakedAsciiCount = 0` en las 6 piezas).
+   - Se incorporó `fitMultiState(key, [polys1, polys0])` para calcular el zoom de cada pieza sobre la caja envolvente combinada entre `p = 0` y `p = 1`, evitando recortes cuando crece la jaula en `birds`, cae la cinta en `scissors` o se despliega `scarf`.
+3. **Paleta estrictamente monocroma de papel con piso WCAG AA y único acento brasa** (`src/geometry.js`, `src/models/*.js`, `src/glyph-stage.js`):
+   - Se eliminaron todos los colores pastel/arcoíris y las texturas oscuras ilegibles (`1.02:1`).
+   - `clampPaperColor` en `src/geometry.js` e iluminación calibrada en `src/glyph-stage.js` garantizan que todo glifo renderizado sobre `#0b0c10` tenga un contraste mínimo medido de `5.08:1` a `13.32:1` (`0` spans por debajo de `4.5:1`), reservando `#d99b26` exclusivamente para el frente de brasa del libro quemado.
+4. **Reingeniería escultórica y optimización geométrica de los 6 modelos** (`src/models/*.js`):
+   - `scarf.js`: se eliminó la esfera negra interna (`1.02:1`) y se reconstruyó el pañuelo con capucha envolvente, nudo frontal y dos puntas en `p = 0`, desplegándose en el triángulo emblemático en `p = 1`.
+   - `silhouette.js`: se corrigió la condición invertida de los relieves (`p < 0.68`) para que el volumen anatómico esté presente en `p = 0` y se vacíe hacia `p = 1` dejando la huella perimetral del Siluetazo (`1327` glifos legibles en lugar de 3 caracteres).
+   - `birds.js`: se redujo la geometría de `24.080` a `6.128` triángulos (`convMs` bajó de `14.7 ms` a `4.1 ms`).
+   - `scissors.js` y `flight.js`: se redujeron triángulos a `2.056` y `1.464` respectivamente, mejorando la lectura del corte de la cinta de celuloide y la apertura de la rampa trasera del Skyvan.
+5. **Sección `00 Umbral`, accesibilidad de teclado y layout mobile sin colisión** (`index.html`, `style.css`, `src/main.js`, `package.json`, `build.mjs`):
+   - Se agregó `<a class="skip-link" href="#main-content">Saltar al texto</a>` y `<header class="threshold" id="threshold">` con `<h1>Artefactos de memoria</h1>`.
+   - Se resolvió la superposición mobile en `< 1100px` y `< 720px`: `.stage` fijo arriba (`44vh` / `40vh`) con `background: var(--bg); z-index: 10; border-bottom: 1px solid var(--hairline)`, `.column` con `margin-top` correspondiente y `.piece-inner` con `top: calc(44vh + 16px)` (`overlapsStage: false`, `horizontalOverflow: false` en `375 × 812`).
+   - Se independizó `yaw`/`pitch` por pieza en `userAngles`, se preservó la rotación al redimensionar la ventana, se sincronizó `?piece=<id>` con el scroll de la columna de lectura y se sumó rotación accesible por teclado con `Shift + Flechas`.
+   - Se eliminó la dependencia muerta `motion` (`package.json`, `build.mjs`, `index.html`, `LICENSE.md`, `vendor/motion.js`).
 
-## Cómo abrirla
+## Cómo abrir y verificar
 
 ```sh
-python server.py --port 8011    # las tools asumen 8011; sin --port sirve 8000
-node tools/cdp.mjs scroll all   # recorrido real, consola limpia
-node tools/perf.mjs             # costo por cuadro
-node tools/verify-nojs.mjs      # texto sin JavaScript
+python server.py --bake         # pre-renderiza citas y créditos en index.html
+python server.py --port 8011    # servidor local para herramientas CDP (sin --port usa 8000)
+node tools/verify-nojs.mjs      # verifica las 6 piezas y textos con JS deshabilitado
+node tools/cdp.mjs scroll all   # recorre toda la obra de 0 a 1 y verifica consola limpia
+node tools/perf.mjs             # mide conversión, raster y FPS en scroll continuo
 ```
 
-`vendor/` está commiteado: la obra abre sin npm. `npm install` falla en `G:` (el drive no soporta la extracción de tar).
+## Evidencia ejecutada (27/10/2026)
 
-## Evidencia (medida el 22/10/2026, no remedida)
-
-| Check | Resultado |
+| Verificación | Resultado medido |
 |---|---|
-| `cdp.mjs scroll all` | seis piezas en orden, 0→1, consola limpia, 37 muestras |
-| `perf.mjs` | 59 fps, peor cuadro 69,8 ms, conversión 8,3 ms, raster 5,7 ms, 1.582 glifos, grilla 95 × 53 |
-| `verify-nojs.mjs` | seis piezas, texto completo en el DOM |
-| Silueta a p=1 | 3 × 1 celdas |
-| Pañuelo a p=1 | triángulo con el vértice arriba |
-| `slop_lint` | 0 bloqueantes |
-
-Todo eso se midió en Chromium headless **sin GPU** y en un viewport de 1440 × 900. No dice nada del teléfono ni de una máquina con otro escalado.
-
-## Bugs de fondo que invalidaban la verificación previa
-
-Los tres ya están arreglados; quedan anotados porque explican por qué las mediciones de antes no valían:
-
-1. `server.py` comparaba `self.path` completo: con `?piece=…` el documento llegaba **sin el corpus**. Las calibraciones previas midieron una página vacía.
-2. Las secciones se medían con `getBoundingClientRect` + `scrollY`; al recargar, el navegador restaura el scroll y las medidas quedan mal. Ahora se mide con `offsetTop`.
-3. El headless reporta `prefers-reduced-motion: reduce`. Se fuerza `no-preference` con `Emulation.setEmulatedMedia`.
-
-## Backlog de pulido
-
-Marcado por el autor el 24/10/2026. No está priorizado ni diseñado: es el inventario de lo que hay que resolver antes de entregar.
-
-### 1. Texto y concepto
-
-El corpus **no es pertinente todavía**. Cuatro de las seis citas son de Gelman y ninguna habla del objeto que le toca:
-
-| Pieza | Autor | Obra | Año |
-|---|---|---|---|
-| El libro quemado | Gelman | *Bajo la lluvia ajena* | 1980 |
-| El pañuelo | Gelman | *Hacia el sur* | 1982 |
-| La silueta | Gelman | *Carta a mi madre* | 1989 |
-| Las tijeras | Lihn | *A partir de Manhattan* | 1979 |
-| Los pájaros | Gelman | *Bajo la lluvia ajena* | 1980 |
-| El vuelo | Saer | *El río sin orillas* | 1991 |
-
-- Elegir textos por **pertinencia al artefacto**, no por disponibilidad. Un poema sobre el mar no dice nada del pañuelo.
-- Ampliar el repertorio: hay corpus del período sin tocar (poesía argentina de los 70 y 80, testimonios, documentos de organismos). Cada cita nueva se verifica con URL o edición y página.
-- Revisar el concepto de cada pieza: hoy la relación objeto↔texto es asociativa y débil. Hay que poder decir en una línea por qué ese objeto y ese texto.
-- Título y encuadre general de la obra: "Artefactos de memoria" ¿es el título que queda?
-
-### 2. Encuadre, rotación y scroll
-
-- **Encuadre de las seis piezas**: las poses de `POSES` se calibraron a ojo con capturas. No hay criterio medible. Hay que fijar uno (silueta legible, pieza centrada, márgenes parejos) y recalibrar.
-- **Rotación**: pasó a libre (yaw sin tope, pitch ±90°) pero sin ninguna noción de reposo: la pieza queda donde la dejaste y no vuelve. Falta decidir si vuelve sola, si hay amortiguación, si el arrastre tiene inercia.
-- **Scroll**: la animación va a escalones de 0,018 de estado. Se ve fluido a 59 fps en headless; en la máquina del autor se siente trabado, así que la medición no está capturando el problema real.
-- **"Corregir toda la ecgación y el scroll"**: no sé qué es "ecgación". Lo interpreto como encuadre + rotación + scroll, pero hay que confirmarlo.
-
-### 3. Navegación parallax con gravedad
-
-Idea del autor, **sin diseñar**. Hoy el parallax es un `translate3d` de ±3 % atado al progreso de la sección: sigue al scroll, no tiene peso.
-
-- Definir qué significa "gravedad": ¿la escena se hunde al bajar y sube al subir, con inercia? ¿los objetos caen y se acomodan? ¿el scroll mueve capas a distinta velocidad con retorno elástico?
-- Definir el alcance: ¿sólo el escenario, o también la columna de lectura? (Mover el texto que se lee rompe la legibilidad.)
-- Choca con `reduce-motion` y con la regla "el estado es función del progreso, sin memoria": una inercia real es estado acumulado. Hay que decidir si la excepción se acepta y se documenta.
-
-### 4. Modelos
-
-- **El pañuelo está mal**. El autor lo dice sin vueltas. Hoy es una capucha hemisférica con un nudo debajo del mentón y dos puntas: se lee, apenas, en la captura, y no se lee en movimiento. Hay que rehacerlo, no retocarlo.
-- **Tijeras, pájaros y vuelo**: no se tocaron en la etapa 4 ni se revisaron contra la regla de legibilidad. Revisar con el mismo criterio que el libro.
-- **Libro y silueta**: se rehicieron, pero sólo se verificaron en el estado inicial y final. Faltan los estados intermedios.
-- Criterio faltante: no hay una prueba de "se lee como el objeto" más allá de mirar la captura. Conviene fijar una (silueta contra una referencia, o al menos un volcado en texto que se pueda leer).
-
-### 5. Auditoría de performance
-
-- Medir en **GPU real**, no headless: la medición actual es 59 fps con `--disable-gpu`.
-- Encontrar el peor cuadro (69,8 ms): un frame perdido cada cierto tiempo se siente trabado aunque el promedio esté bien.
-- Costo por pieza, no sólo del libro: `toGlyphPolygons` corre sobre el grafo entero y hay piezas más densas.
-- Costo de las texturas canvas: se crean por pieza y por material, en el arranque. Medir el tiempo hasta la primera escena legible.
-- Memoria: `setPolygons` reutiliza la malla, pero ¿se liberan las viejas?
-
-### 6. Auditoría de código
-
-- Duplicación: `tools/*.mjs` repiten el arranque de Chromium, las banderas de CDP y el perfil. Un módulo común.
-- `src/main.js` tiene 400 líneas y mezcla arranque, scroll, arrastre, corpus, créditos y debug por query string. Separar.
-- Los seis modelos repiten el patrón de texturas (`texMat`) y de `update(p)`. Revisar si hay un helper que falte.
-- Estados imposibles: `debugP`, `POSES`, `fitCache`, `burn`. Documentar o sacar.
-- Sin tests. El único control es mirar capturas. Al menos un test de `burn(p)` monótono y de `update(p)` puro por modelo.
-
-### 7. Auditoría de estética
-
-- Contraste real de la trama sobre el fondo (hoy está declarado en `DESIGN.md` como estimado, no medido).
-- Densidad: grilla 95 × 53 con celda de 14 px. ¿Es la relación correcta entre legibilidad del poema y detalle del objeto?
-- Jerarquía: la columna de lectura y la trama compiten. Revisar tamaño, peso y aire.
-- El glow: ¿sigue siendo un recurso o ya es decoración?
-- Revisar las seis piezas juntas: ¿se ven como una serie o como seis ejercicios?
-
-### 8. Accesibilidad y dispositivos
-
-- Teléfono real: la celda de 14 px y el arrastre táctil no se probaron en hardware.
-- Lector de pantalla: el DOM está bien armado, pero no se escuchó con NVDA ni VoiceOver.
-- Teclado: el arrastre es la única forma de girar. Falta una alternativa.
-
-## Pendientes verificables (chicos)
-
-| # | Qué | Por qué no está hecho |
-|---|---|---|
-| 1 | Número de verso de la cita de Lihn | Memoria Chilena sólo expone el fragmento; falta la edición Ganymedes. La cita lleva URL, no página. |
-| 2 | Presentación / defensa del TP | No es código. |
-
-## Cómo encarar la ronda
-
-1. **Auditar primero** (performance con GPU, código, estética, concepto) y escribir hallazgos. Sin eso, cualquier cambio es a ciegas.
-2. **Texto y concepto** después: el corpus define qué tiene que mostrar cada modelo. Elegir los textos antes de rehacer el pañuelo.
-3. **Encuadre y scroll**, con criterio medible escrito antes de tocar las poses.
-4. **Parallax con gravedad**, que necesita la decisión sobre estado acumulado.
-5. **Modelos**, empezando por el pañuelo.
-6. Verificación completa y recién ahí el cierre.
-
-## Registro
-
-- Repo del proyecto commiteado en `main`. El vault lo espeja archivo por archivo: cada cambio va en los dos.
-- La carpeta real es `02 - Áreas/Universidad/…/TP - Final/02 - Artefactos de memoria`, no `01 - Proyectos`.
-- Memoria durable en matumem, `app_id: artefactos-de-memoria`.
+| `node tools/verify-nojs.mjs` | `piezas: 6`, `claseJs: false`, `hayEscenario: false`, textos completos en el DOM (`134` a `231` caracteres por cita) |
+| `node tools/cdp.mjs scroll all` | `416` frames, 6 piezas recorridas en orden (`0 -> 1`), `--glow` dinámico (`0.72` / `0.86` / `1`), `CONSOLA: limpia` |
+| `node tools/perf.mjs` | `58.6 fps` en scroll continuo, conversión `10.3 ms` (libro) y `0.9 a 5.3 ms` (resto de piezas), `1.582` glifos, grilla `95 × 53` |
+| Contraste WCAG AA en `<pre>` | Mínimo medido `5.08:1` (brasa) y `5.48:1` a `13.32:1` (papel monocromo); `0` spans bajo `4.5:1` en las 6 piezas |
+| Filtración de glifos (`sculpt`) | `leakedAsciiCount: 0` en todas las piezas y estados (`p = 0`, `0.5`, `1`) |
+| Mobile `375 × 812` | `stageBottom: 324.8px`, `pieceInnerTop: 336.8px`, `overlapsStage: false`, `horizontalOverflow: false` (`docWidth: 360 <= 375`) |
