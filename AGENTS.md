@@ -1,3 +1,7 @@
+---
+type: registro
+---
+
 # AGENTS.md: Artefactos de memoria
 
 Reglas de trabajo del repo. Autoridad: `usuario-en-sesión` > este archivo > `DESIGN.md` (decisiones visuales ya tomadas) > `PLAN.md` (orden de ejecución) > `SKILL.md`.

@@ -1,3 +1,7 @@
+---
+type: registro
+---
+
 # DESIGN — Artefactos de memoria
 
 Documento de trabajo del sistema visual y de interacción. Fija lo decidido y marca lo que sigue abierto. Manda sobre `style.css` y sobre cualquier propuesta de UI; si el código actual dice otra cosa, el código está viejo.

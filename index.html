@@ -14,14 +14,8 @@
 <body>
   <a class="skip-link" href="#main-content">Saltar al texto</a>
   <div id="stage" class="stage" aria-hidden="true"></div>
+ <canvas id="bg" class="bg" aria-hidden="true"></canvas>
   <main class="column" id="main-content">
-    <header class="threshold" id="threshold">
-      <div class="threshold-inner">
-        <p class="threshold-kicker">Seis objetos · Lectura interactiva</p>
-        <h1 class="work-title">Artefactos de memoria</h1>
-        <p class="threshold-lead">Seis objetos de la última dictadura cívico-militar argentina reconstruidos como cuerpos tipográficos. Desplazá la lectura para atravesar cada estado; arrastrá el objeto para orbitarlo.</p>
-      </div>
-    </header>
     <!--CITAS:START-->
         <section class="piece" id="piece-book" data-piece="book" aria-labelledby="t-book">
           <div class="piece-inner">
@@ -34,27 +28,15 @@
             </blockquote>
           </div>
         </section>
-        <section class="piece" id="piece-scarf" data-piece="scarf" aria-labelledby="t-scarf">
-          <div class="piece-inner">
-            <h2 id="t-scarf" class="piece-title">El pañuelo</h2>
-            <blockquote class="citation" cite="https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5">
-              <p>
-          <span>arrastran sus lágrimas con un pañuelito detrás como barriendo el sufrimiento</span>
-          <span>como no queriendo mojarlo</span>
-          <span>para que el sufrimiento estalle y arda y haga asiento donde sentarse a pensar otra vez</span>
-          </p>
-              <footer>Juan Gelman, <i>Hacia el sur, 1982</i></footer>
-            </blockquote>
-          </div>
-        </section>
         <section class="piece" id="piece-silhouette" data-piece="silhouette" aria-labelledby="t-silhouette">
           <div class="piece-inner">
             <h2 id="t-silhouette" class="piece-title">La silueta</h2>
-            <blockquote class="citation" cite="https://www.cels.org.ar/common/documentos/carta_abierta_rodolfo_walsh.pdf">
+            <blockquote class="citation" cite="https://es.wikisource.org/wiki/Carta_abierta_de_un_escritor_a_la_Junta_Militar">
               <p>
           <span>Quince mil desaparecidos,</span>
-          <span>diez mil presos, cuatro mil muertos:</span>
-          <span>las cifras desnudas de este terror.</span>
+          <span>diez mil presos, cuatro mil muertos,</span>
+          <span>decenas de miles de desterrados</span>
+          <span>son la cifra desnuda de ese terror.</span>
           </p>
               <footer>Rodolfo Walsh, <i>Carta abierta de un escritor a la Junta Militar, 1977</i></footer>
             </blockquote>
@@ -71,6 +53,20 @@
           <span>nos borrara la voz en el cuaderno.</span>
           </p>
               <footer>María Elena Walsh, <i>Desventuras en el País-Jardín-de-Infantes, 1979</i></footer>
+            </blockquote>
+          </div>
+        </section>
+        <section class="piece" id="piece-tv" data-piece="tv" aria-labelledby="t-tv">
+          <div class="piece-inner">
+            <h2 id="t-tv" class="piece-title">La televisión</h2>
+            <blockquote class="citation" cite="https://es.wikisource.org/wiki/Carta_abierta_de_un_escritor_a_la_Junta_Militar.">
+              <p>
+          <span>Entre mil quinientas y tres mil personas</span>
+          <span>han sido masacradas en secreto</span>
+          <span>después que ustedes prohibieron informar</span>
+          <span>sobre hallazgos de cadáveres.</span>
+          </p>
+              <footer>Rodolfo Walsh, <i>Carta abierta de un escritor a la Junta Militar, 1977</i></footer>
             </blockquote>
           </div>
         </section>
@@ -114,18 +110,11 @@
           <p class="credits-meta">Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
         </div>
         <div class="credits-item">
-          <p class="credits-cite">arrastran sus lágrimas con un pañuelito detrás como barriendo el sufrimiento
-como no queriendo mojarlo
-para que el sufrimiento estalle y arda y haga asiento donde sentarse a pensar otra vez</p>
-          <p class="credits-meta">Juan Gelman, <i>Hacia el sur, 1982</i>. Material de Lectura, UNAM: Juan Gelman, Poesía moderna, «De Hacia el sur (1982)», «Otras partes». <a href="https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5" target="_blank" rel="noopener noreferrer">https://materialdlectura.unam.mx/poesia-moderna/16-poesia-moderna-cat/333-183-juan-gelman?start=5</a></p>
-          <p class="credits-meta">Obra con derechos reservados (Juan Gelman, 1930-2014). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
-          <p class="credits-meta">Inscripción de la pieza: NUNCA MÁS. Consigna de las Madres y Abuelas de Plaza de Mayo, asociada al Informe de la CONADEP (1984), al alegato de Julio Strassera en el Juicio a las Juntas (1985) y a las marchas de la organización. <a href="https://continuemosestudiando.abc.gob.ar/contenido/palabra-clave-panuelazo" target="_blank" rel="noopener noreferrer">https://continuemosestudiando.abc.gob.ar/contenido/palabra-clave-panuelazo</a></p>
-        </div>
-        <div class="credits-item">
           <p class="credits-cite">Quince mil desaparecidos,
-diez mil presos, cuatro mil muertos:
-las cifras desnudas de este terror.</p>
-          <p class="credits-meta">Rodolfo Walsh, <i>Carta abierta de un escritor a la Junta Militar, 1977</i>. Rodolfo Walsh, «Carta abierta de un escritor a la Junta Militar», Buenos Aires, 24 de marzo de 1977. Archivo CELS. <a href="https://www.cels.org.ar/common/documentos/carta_abierta_rodolfo_walsh.pdf" target="_blank" rel="noopener noreferrer">https://www.cels.org.ar/common/documentos/carta_abierta_rodolfo_walsh.pdf</a></p>
+diez mil presos, cuatro mil muertos,
+decenas de miles de desterrados
+son la cifra desnuda de ese terror.</p>
+          <p class="credits-meta">Rodolfo Walsh, <i>Carta abierta de un escritor a la Junta Militar, 1977</i>. Rodolfo Walsh, «Carta abierta de un escritor a la Junta Militar», Buenos Aires, 24 de marzo de 1977, apartado 2. Texto cotejado en Wikisource: <a href="https://es.wikisource.org/wiki/Carta_abierta_de_un_escritor_a_la_Junta_Militar" target="_blank" rel="noopener noreferrer">https://es.wikisource.org/wiki/Carta_abierta_de_un_escritor_a_la_Junta_Militar</a></p>
           <p class="credits-meta">Documento histórico de derechos humanos y cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
         </div>
         <div class="credits-item">
@@ -135,6 +124,14 @@ como si el lápiz del censor
 nos borrara la voz en el cuaderno.</p>
           <p class="credits-meta">María Elena Walsh, <i>Desventuras en el País-Jardín-de-Infantes, 1979</i>. María Elena Walsh, «Desventuras en el País-Jardín-de-Infantes», suplemento Cultura y Nación del diario Clarín, Buenos Aires, 16 de agosto de 1979. <a href="https://www.educ.ar/recursos/129099/desventuras-en-el-pais-jardin-de-infantes" target="_blank" rel="noopener noreferrer">https://www.educ.ar/recursos/129099/desventuras-en-el-pais-jardin-de-infantes</a></p>
           <p class="credits-meta">Obra con derechos reservados (María Elena Walsh, 1930-2011). Cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
+        </div>
+        <div class="credits-item">
+          <p class="credits-cite">Entre mil quinientas y tres mil personas
+han sido masacradas en secreto
+después que ustedes prohibieron informar
+sobre hallazgos de cadáveres.</p>
+          <p class="credits-meta">Rodolfo Walsh, <i>Carta abierta de un escritor a la Junta Militar, 1977</i>. Rodolfo Walsh, «Carta abierta de un escritor a la Junta Militar», Buenos Aires, 24 de marzo de 1977, apartado 4. Texto cotejado en Wikisource: <a href="https://es.wikisource.org/wiki/Carta_abierta_de_un_escritor_a_la_Junta_Militar." target="_blank" rel="noopener noreferrer">https://es.wikisource.org/wiki/Carta_abierta_de_un_escritor_a_la_Junta_Militar.</a> La carta habla de prensa y diarios; la elección de la televisión como objeto es de la obra.</p>
+          <p class="credits-meta">Documento histórico de derechos humanos y cita breve conforme al derecho de cita (art. 10, Ley 11.723, Argentina).</p>
         </div>
         <div class="credits-item">
           <p class="credits-cite">Del otro lado de la reja

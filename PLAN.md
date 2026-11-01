@@ -1,3 +1,7 @@
+---
+type: registro
+---
+
 # PLAN: Artefactos de memoria
 
 Plan de ejecución para llevar el proyecto a su estado final. Por etapas, con verificación entre etapas: **ninguna etapa se da por cerrada sin evidencia ejecutada**.

@@ -1,3 +1,7 @@
+---
+type: registro
+---
+
 # VALIDACIÓN: Artefactos de memoria
 
 Los criterios de cierre de la obra y la forma de medirlos. Los comandos corren desde la carpeta del proyecto; los que hablan con la página necesitan el servidor en el puerto 8011 (`python server.py --port 8011`).

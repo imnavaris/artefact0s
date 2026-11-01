@@ -1,3 +1,7 @@
+---
+type: registro
+---
+
 # HANDOFF: Artefactos de memoria
 
 Punto de reanudación. Última sesión de trabajo: 27/10/2026.
