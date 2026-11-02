@@ -1,4 +1,4 @@
-# Artefactos de memoria
+# Artefact0s
 
 Una experiencia web interactiva y narrativa de lectura sobre la última dictadura cívico-militar argentina. 
 
@@ -20,5 +20,5 @@ python -m http.server 8000
 
 Luego abrir [http://localhost:8000](http://localhost:8000) en el navegador.
 
-- **Navegación:** Desplazarse con el scroll para transicionar entre piezas y estados.
-- **Interacción:** Arrastrar con el cursor (o usar `Shift + Flechas`) para orbitar los modelos 3D.
+- **Navegación:** Desplazarse con el scroll para transicionar entre los artefactos.
+- **Interacción:** Arrastrar con el cursor para rotar los modelos 3D.
