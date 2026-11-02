@@ -123,7 +123,7 @@ export class GlyphStage {
         if (isTvScreenCell(col)) {
           if (this.tvStatic <= 0.02) {
             grid.char[i] = (r + c) % 6 === 0 ? "·" : ".";
-            if (grid.color) grid.color[i] = "#1d212b";
+            if (grid.color) grid.color[i] = "#2c3347";
           } else if (this.tvStatic < 0.16) {
             const midR = e ? (e.minR + e.maxR) * 0.5 : rows * 0.5;
             const band = Math.max(0.8, (this.tvStatic / 0.16) * (e ? (e.maxR - e.minR) * 0.42 : 8));
@@ -136,7 +136,7 @@ export class GlyphStage {
               if (grid.color) grid.color[i] = `#${sh}${sh}ff`;
             } else {
               grid.char[i] = ".";
-              if (grid.color) grid.color[i] = "#1d212b";
+              if (grid.color) grid.color[i] = "#2c3347";
             }
           } else {
             const h = (hash(r + tick * 17, c + tick * 31) % 1000) / 1000;

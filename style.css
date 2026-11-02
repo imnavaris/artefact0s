@@ -113,8 +113,3 @@ a{color:var(--accent);text-underline-offset:3px}
  .piece-title{font-size:22px;line-height:30px}
  .citation p{font-size:14px;line-height:22px}
 }
-@media (prefers-reduced-motion:reduce){
- :root{--glow:0.72}
- .glyph-scene{transform:none !important}
- .cursor{animation:none}
-}

@@ -23,7 +23,7 @@ const POSES = {
  book: { rotX: 70, rotY: 90, zoom: 120 },
  silhouette: { rotX: 80, rotY: 90, zoom: 120 },
  scissors: { rotX: 60, rotY: 30, zoom: 120 },
- tv: { rotX: 90, rotY: 90, zoom: 120 },
+ tv: { rotX: 90, rotY: 270, zoom: 120 }, // la pantalla mira hacia -Z del mundo: la camara la ve de frente desde 270
  birds: { rotX: 86, rotY: 90, zoom: 120 },
  flight: { rotX: 26, rotY: 55, zoom: 120 },
 };
@@ -61,7 +61,7 @@ const quoteFor = (id) => corpus.texts.find((t) => t.piece === id);
 
 const q = new URLSearchParams(location.search);
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduceMotion = false; // la obra depende del movimiento: nunca se reduce
 
 const debugPiece = q.get('piece');
 const poseOverride = { rx: q.has('rx') ? parseFloat(q.get('rx')) : null, ry: q.has('ry') ? parseFloat(q.get('ry')) : null };
