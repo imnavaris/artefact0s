@@ -28,6 +28,11 @@ const POSES = {
  flight: { rotX: 26, rotY: 55, zoom: 120 },
 };
 
+const LIGHTS = {
+  default: { direction: [0.45, 0.65, 0.8], intensity: 1.15 },
+  tv: { direction: [0.35, -0.75, 0.6], intensity: 1.25 },
+};
+
 const host = document.getElementById('stage');
 const stage = new GlyphStage(host);
 const bg = createBackground(document.getElementById('bg'));
@@ -206,6 +211,8 @@ function applyPiece(index) {
  stage.camera.rotX = pose.rotX + pitch;
  stage.camera.rotY = pose.rotY + yaw;
  stage.camera.zoom = stage.fitCache.get(section.id) ?? pose.zoom;
+ const light = LIGHTS[section.id] || LIGHTS.default;
+ stage.setDirectionalLight(light.direction, light.intensity);
  const quote = quoteFor(section.id);
  stage.setText(quote ? (quote.inscription || quote.excerpt) : '');
  document.querySelectorAll('.piece').forEach((el) => el.classList.toggle('is-active', el === section.el));

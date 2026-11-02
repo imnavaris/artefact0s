@@ -83,6 +83,9 @@ export class GlyphStage {
     this.tvStatic = Math.max(0, Math.min(1, amp || 0));
     this.tvTime = now || 0;
   }
+  setDirectionalLight(direction, intensity = 1.15) {
+    this.handle.setOptions({ directionalLight: { direction, intensity } });
+  }
   sculpt(grid) {
     const { cols, rows } = grid;
     let minC = Infinity, maxC = -1, minR = Infinity, maxR = -1;

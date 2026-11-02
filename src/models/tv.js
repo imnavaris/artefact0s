@@ -4,17 +4,19 @@ export function createTv() {
   const root = new T.Group();
   const bodyMat = texMat((c, w, h) => {
     const g = c.createLinearGradient(0, 0, w, h);
-    g.addColorStop(0, '#e4dccf'); g.addColorStop(0.55, '#b4ac9e'); g.addColorStop(1, '#7e7769');
+    g.addColorStop(0, '#ffffff'); g.addColorStop(0.55, '#f4efe6'); g.addColorStop(1, '#dbd4c6');
     c.fillStyle = g; c.fillRect(0, 0, w, h);
-  }, { roughness: 0.5, metalness: 0.15 });
-  const trimMat = mat('#ffffff', { roughness: 0.25, metalness: 0.5 });
-  const darkMat = mat('#544f45', { roughness: 0.65, metalness: 0.2 });
+  }, { roughness: 0.35, metalness: 0.1 });
+  const trimMat = mat('#ffffff', { roughness: 0.2, metalness: 0.3 });
+  const darkMat = mat('#38342c', { roughness: 0.75, metalness: 0.1 });
   const knobMat = mat('#ffffff', { roughness: 0.2, metalness: 0.5 });
   const screenMat = mat('#384468', { roughness: 0.2, metalness: 0.0 });
   screenMat.userData = { fixedColor: '#384468' };
+  const backMat = mat('#24211c', { roughness: 0.9, metalness: 0.02 });
+
   box(root, [3.2, 2.4, 1.6], bodyMat, [0, 0, 0]);
-  box(root, [2.3, 1.7, 1.0], bodyMat, [-0.1, 0, -1.25]);
-  box(root, [1.3, 1.0, 0.75], bodyMat, [-0.1, 0, -2.0]);
+  box(root, [2.3, 1.7, 1.0], backMat, [-0.1, 0, -1.25]);
+  box(root, [1.3, 1.0, 0.75], backMat, [-0.1, 0, -2.0]);
   for (const sx of [-1.25, 1.25]) for (const sz of [-0.55, 0.55]) {
     part(root, new T.CylinderGeometry(0.13, 0.17, 0.26, 10), darkMat, [sx, -1.32, sz]);
   }
