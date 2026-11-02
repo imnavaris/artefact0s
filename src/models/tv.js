@@ -59,12 +59,15 @@ export function createTv() {
     root,
     kind: 'tv',
     animated: true,
+    frame(now) { this._t = (now || 0) * 0.001; },
     tvStatic(p) { return sm(0.04, 0.45, p); },
     update(p) {
-      root.rotation.y = Math.sin(p * Math.PI) * 0.18;
-      root.rotation.x = 0.04 + Math.sin(p * Math.PI) * 0.05;
+      const t = this._t || 0;
+      root.position.y = Math.sin(t * 1.5) * 0.03;
+      root.rotation.y = Math.sin(p * Math.PI) * 0.18 + Math.sin(t * 1.2) * 0.02;
+      root.rotation.x = 0.04 + Math.sin(p * Math.PI) * 0.05 + Math.cos(t * 1.4) * 0.015;
       knobs.forEach((k, i) => { k.rotation.z = (i ? -1 : 1) * p * 5.5; });
-      ants.forEach(({ g, s }) => { g.rotation.z = -s * (0.06 + p * 0.3) + Math.sin(p * 20 + s) * 0.03; });
+      ants.forEach(({ g, s }) => { g.rotation.z = -s * (0.06 + p * 0.3) + Math.sin(p * 20 + s + t * 4) * 0.03; });
     }
   };
 }

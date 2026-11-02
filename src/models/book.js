@@ -139,6 +139,7 @@ export function createBook(){
    frame(now){ this._t=(now||0)*0.001; },
    update(p){
     const t=this._t||0;
+    root.position.y=-.18+Math.sin(t*1.5)*.03;
     root.rotation.x=.42+p*.16+Math.sin(t*1.8)*.015;
     root.rotation.y=-.22+Math.sin(p*Math.PI)*.18+Math.cos(t*1.3)*.015;
     burnOrder.forEach((pg,i)=>{

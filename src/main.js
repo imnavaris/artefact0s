@@ -116,8 +116,11 @@ function stateOf(p) {
 }
 
 // Cada artefacto aparece desde el negro, se sostiene, y se apaga antes del siguiente.
-const stageOpacity = (p) => sm(0.015, 0.14, p) * (1 - sm(0.9, 0.99, p));
-const titleForm = (p) => sm(0.02, 0.12, p) * (1 - sm(0.88, 0.97, p));
+const stageOpacity = (p, id) => {
+  if (id === 'book') return (0.75 + 0.25 * sm(0, 0.12, p)) * (1 - sm(0.88, 0.99, p));
+  return sm(0.01, 0.15, p) * (1 - sm(0.88, 0.99, p));
+};
+const titleForm = (p) => sm(0.02, 0.44, p) * (1 - sm(0.86, 0.98, p));
 
 const sections = [...document.querySelectorAll('.piece')].map((el) => ({
  el,
@@ -234,7 +237,7 @@ let last = performance.now();
 let lastRedraw = 0;
 let stageO = -1;
 let smoothG = 0;
-const FRAME_MS = 30;
+const FRAME_MS = 16;
 
 function frame(now) {
  const dt = Math.min(1 / 20, (now - last) / 1000);
@@ -247,6 +250,7 @@ function frame(now) {
   for (const s of sections) {
     const p = progressOf(s);
     if (!frozen && !reduceMotion) {
+      s.dz?.frame?.(now);
       s.dz?.set(titleForm(p));
       s.tw?.setScroll(p, now, dt); // interactivo: escribe hacia abajo, borra hacia arriba
     }
@@ -256,13 +260,12 @@ function frame(now) {
  if (section) {
  const p = progressOf(section);
  let target = debugP !== null ? debugP : stateOf(p);
- if (reduceMotion) target = Math.round(target * 3) / 3;
  const prev = damped.get(section.id) ?? target;
- const next = (reduceMotion || debugP !== null) ? target : prev + (target - prev) * (1 - Math.exp(-dt * 9));
+ const next = debugP !== null ? target : prev + (target - prev) * (1 - Math.exp(-dt * 12));
  damped.set(section.id, next);
 
  const model = models.get(section.id);
- const animating = (model.animated && stageO > 0.01) || stage.burn > 0 || stage.scatter > 0;
+ const animating = model.animated || stage.burn > 0 || stage.scatter > 0 || stageO > 0.005;
  const changed = Math.abs(next - section.state) > 0.0012;
  if ((changed || animating) && now - lastRedraw >= FRAME_MS) {
  section.state = next;
@@ -270,7 +273,7 @@ function frame(now) {
  redraw(now);
  updateGlow(next);
  }
- const o = frozen ? 1 : stageOpacity(p);
+ const o = frozen ? 1 : stageOpacity(p, section.id);
  if (Math.abs(o - stageO) > 0.003) {
  stageO = o;
  host.style.setProperty('--stage-o', o.toFixed(3));
