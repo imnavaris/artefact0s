@@ -8,7 +8,7 @@ import { toGlyphPolygons, bounds } from './geometry.js';
 import { GlyphStage } from './glyph-stage.js';
 import { createBackground } from './bg.js';
 import { Typewriter } from './typewriter.js';
-import { Dissolve } from './dissolve.js';
+import { Dissolve, DissolveText } from './dissolve.js';
 
 const PIECES = [
  { id: 'book', create: createBook },
@@ -24,7 +24,7 @@ const POSES = {
  silhouette: { rotX: 80, rotY: 90, zoom: 120 },
  scissors: { rotX: 60, rotY: 30, zoom: 120 },
  tv: { rotX: 90, rotY: 90, zoom: 120 },
- birds: { rotX: 40, rotY: 0, zoom: 120 },
+ birds: { rotX: 86, rotY: 90, zoom: 120 },
  flight: { rotX: 26, rotY: 55, zoom: 120 },
 };
 
@@ -89,12 +89,13 @@ function fitPiece(piece) {
  stage.camera.rotX = pose.rotX;
  stage.camera.rotY = pose.rotY;
  stage.camera.zoom = pose.zoom;
- const states = [0, 0.25, 0.5, 0.75, 1].map((s) => {
+ const sampleStates = model.fitStates || [0, 0.25, 0.5, 0.75, 1];
+ const states = sampleStates.map((s) => {
  model.update(s);
  model.frame?.(5000 * s);
  return toGlyphPolygons(model.root);
  });
- stage.fitMultiState(piece.id, states);
+ stage.fitMultiState(piece.id, states, innerWidth > 1100 ? 0.44 : 0.82, 0.76);
  model.update(0);
 }
 
@@ -243,17 +244,13 @@ function frame(now) {
  if (idx >= 0 && idx !== current) applyPiece(idx);
 
  // Titulos y poemas de todas las piezas siguen su propio progreso.
- for (const s of sections) {
- const p = progressOf(s);
- if (!frozen && !reduceMotion) {
- s.dz?.set(titleForm(p));
- if (s.tw) {
- if (p > 0.08 && s.twState === 'idle') { s.tw.begin(now); s.twState = 'started'; }
- else if (p < 0.004 && s.twState === 'started') { s.tw.reset(); s.twState = 'idle'; }
- s.tw.update(now);
- }
- }
- }
+  for (const s of sections) {
+    const p = progressOf(s);
+    if (!frozen && !reduceMotion) {
+      s.dz?.set(titleForm(p));
+      s.tw?.setScroll(p, now, dt); // interactivo: escribe hacia abajo, borra hacia arriba
+    }
+  }
 
  const section = sections[current];
  if (section) {

@@ -135,7 +135,12 @@ export function createBook(){
   return {
    root,
    kind:'book',
+   animated:true,
+   frame(now){ this._t=(now||0)*0.001; },
    update(p){
+    const t=this._t||0;
+    root.rotation.x=.42+p*.16+Math.sin(t*1.8)*.015;
+    root.rotation.y=-.22+Math.sin(p*Math.PI)*.18+Math.cos(t*1.3)*.015;
     burnOrder.forEach((pg,i)=>{
      const amount=burnAt(i,p);
      const {mesh,sign,n,height}=pg;
@@ -156,7 +161,7 @@ export function createBook(){
    burn(p){
     let sum=0;
     for(let i=0;i<burnOrder.length;i++)sum+=burnAt(i,p);
-    return sum/burnOrder.length;
+    return p<=0.04?0:Math.pow(clamp01((p-0.04)/0.92),1.3);
    }
   };
 }

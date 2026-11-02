@@ -84,9 +84,16 @@ export function createScissors(){
   return {
    root,
    kind:'scissors',
+   animated:true,
+   frame(now){ this._t=(now||0)*0.001; },
    update(p){
+    const t=this._t||0;
+    root.rotation.y=-.18+Math.sin(p*Math.PI)*.22+Math.sin(t*1.4)*.02;
+    root.rotation.z=-.32+p*.18;
     arms.forEach(({s,a})=>{
-     a.rotation.z=s*(.42-p*.37);
+     const snip=p<0.3?Math.sin(p/0.3*Math.PI)*0.18:0;
+     const cut=Math.min(1,Math.max(0,(p-0.22)/0.55));
+     a.rotation.z=s*(.46-snip-cut*.42+Math.sin(t*3)*0.012);
     });
     halves.forEach(({s,g})=>{
      g.position.x=s*p*.32;

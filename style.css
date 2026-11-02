@@ -36,7 +36,7 @@ body{font-family:var(--mono);font-size:17px;line-height:28px;font-weight:400}
 
 /* Escenario ASCII centrado; los poemas se reparten a los costados. */
 .stage{
- position:fixed;inset:0 27vw;z-index:1;display:flex;align-items:center;justify-content:center;
+ position:fixed;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;
  overflow:hidden;touch-action:pan-y;cursor:grab;opacity:var(--stage-o,0);
 }
 .stage:active{cursor:grabbing}
@@ -60,7 +60,8 @@ body{font-family:var(--mono);font-size:17px;line-height:28px;font-weight:400}
 .piece-inner>*{width:min(26vw,400px);pointer-events:auto}
 .piece:nth-of-type(even) .piece-inner{align-items:flex-end}
 .no-js .piece-inner,.piece-inner{}
-.piece-title{font-family:var(--mono);font-size:28px;line-height:40px;font-weight:400;letter-spacing:.01em;margin:0 0 20px;color:var(--ink);min-height:40px}
+.piece-title{margin:0 0 18px;color:var(--ink);min-height:66px;opacity:0}
+.dissolve-art{margin:0;font-family:'Sligoil Micro',var(--mono);font-size:6.5px;line-height:6.5px;letter-spacing:0;color:var(--ink);white-space:pre;user-select:none;text-shadow:0 0 6px var(--bg),0 0 12px rgba(228,225,218,.2)}
 .dz{display:inline-block;white-space:pre;will-change:transform,opacity}
 .citation{margin:0}
 .citation p{margin:0 0 20px;font-size:16px;line-height:26px;color:var(--paper);text-shadow:0 0 6px var(--bg),0 0 14px var(--bg)}

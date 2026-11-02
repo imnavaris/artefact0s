@@ -104,12 +104,16 @@ export function createFlight(){
  return {
  root,
  kind:'flight',
+  animated:true,
+  frame(now){ this._t=(now||0)*0.001; },
  update(p){
+  const t=this._t||0;
  const open=sm(.02,.65,p);
  // La rampa baja desde cerrada (vertical, 0) hasta abierta extendida hacia atras (-118 grados)
  ramp.rotation.z=-open*Math.PI*.66;
  struts.visible=open>.25;
- props.forEach((pr,i)=>{pr.rotation.x=p*28*(i?1:-1);});
+ props.forEach((pr,i)=>{pr.rotation.x=(p*36+t*16)*(i?1:-1);});
+  root.position.y=Math.sin(t*2.1+p*6)*.05;
  // Rotamos el avion para mostrar de lleno la cola y la rampa abierta
  root.rotation.y=-.72-open*.48;
  root.rotation.x=.28+open*.18;
